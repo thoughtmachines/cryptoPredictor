@@ -8,6 +8,9 @@ from data.loader import cryptoData
 from models.model import  MLPRegressor, SeqRegressor
 
 DEVICE = torch.device("cpu")
+if torch.cuda.is_available():
+    DEVICE = "cuda:0"
+    print("Using CUDA backend")
 
 
 if __name__ == "__main__":
