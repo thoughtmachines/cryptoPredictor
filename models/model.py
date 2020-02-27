@@ -7,27 +7,23 @@ class SeqRegressor(nn.Module):
     def __init__(self):
         super(SeqRegressor,self).__init__()
 
-class CNNRegressor(nn.Module):
-
-    def __init__(self):
-        super(CNNRegressor,self).__init__()
-
+        self.lstm = nn.LSTM(23,20,2)
+        #nn.LSTM(input_size,hidden_size,num_layers)
+        self.lin = nn.Linear(20,1)
         self.relu = nn.ReLU()
-        self.layer1 = nn.Conv2d(1,10,(3,23))
-        self.layer1_bn = nn.BatchNorm2d(10)
 
-        self.layer2 = nn.Conv2d(10,5,(3,1))
-        self.layer2_bn = nn.BatchNorm2d(5)
+    def forward(self,x,hidden):
 
-        self.layer3 = nn.Conv2d(5,1,(3,1))
-
-    def forward(self,x):
-        x = self.relu(self.layer1(x))
-        x = self.layer1_bn(x)
-        x = self.relu(self.layer2(x))
-        x = self.layer2_bn(x)
-        x = self.relu(self.layer3(x))
+        """
+        hidden_state = torch.randn(no_stack, batch_size, hidden_dim)
+        cell_state = torch.randn(no_stack, batch_size, hidden_dim)
+        """
+        out,hidden = self.lstm(x,hidden)
+        x = self.relu(out)
+        x = self.relu(self.lin(x)[6])
         return x
+
+
 
 class MLPRegressor(nn.Module):
 

@@ -7,7 +7,7 @@ DEVICE = torch.device("cpu")
 
 class cryptoData(object):
 
-    def __init__(self,currency):
+    def __init__(self,currency,test = False):
         data = pd.read_csv("data/data/"+currency+"Final.csv")
 
         data = data.drop(["Unnamed: 0",
@@ -19,8 +19,12 @@ class cryptoData(object):
                         "mediantransactionvalue-"+currency,
                         "Unnamed: 0_y"
                         ], axis=1)
+        self.test = test
 
-        data = data.loc[50:749,:]
+        if test:
+            data = data.loc[750:850,:]
+        else:
+            data = data.loc[50:749,:]
 
         self.data = torch.Tensor(data.to_numpy()).to(DEVICE)
 
@@ -36,4 +40,6 @@ class cryptoData(object):
 
     
     def __len__(self):
+        if self.test:
+            return 90
         return 680
