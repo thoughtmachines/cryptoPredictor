@@ -1,6 +1,10 @@
 import torch
 from torch import nn
 
+DEVICE = torch.device("cpu")
+if torch.cuda.is_available():
+    DEVICE = "cuda:0"
+    print("Using CUDA backend")
 
 class SeqRegressor(nn.Module):
 
@@ -61,6 +65,7 @@ class MLPRegressor(nn.Module):
         self.layer5 = nn.Linear(10,1)
     
     def forward(self,x):
+        x = x.to(DEVICE)
         x = x.flatten().view(1,161)
         x = self.relu(self.layer1(x))
         #x = self.layer1_bn(x)

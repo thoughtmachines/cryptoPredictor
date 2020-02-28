@@ -8,12 +8,15 @@ from models.model import  MLPRegressor, SeqRegressor
 
 
 DEVICE = torch.device("cpu")
+if torch.cuda.is_available():
+    DEVICE = "cuda:0"
+    print("Using CUDA backend")
 
 if __name__ == "__main__":
 
     """
 
-    model = MLPRegressor()
+    model = MLPRegressor().to(DEVICE)
     
     optimizer = Adam(model.parameters(), lr=0.0001, weight_decay=0.00001)
     lossfn = nn.MSELoss(reduction='mean')
@@ -27,6 +30,9 @@ if __name__ == "__main__":
             if i == 690:
                 break
             x,target = data
+            x = x.to(DEVICE)
+            target = target.to(DEVICE)
+            
             x.unsqueeze_(0).unsqueeze_(0)
 
             optimizer.zero_grad()
