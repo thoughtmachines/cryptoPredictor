@@ -16,13 +16,13 @@ if __name__ == "__main__":
     model = SeqRegressor()
     
 
-    dataloader = cryptoData("btc")
-    model.load_state_dict(torch.load("xlstm.pth"))
+    dataloader = cryptoData("btc",test=True)
+    model.load_state_dict(torch.load("new_lstm.pth"))
     model.to(DEVICE)
     t = []
     h = []
     for i,data in enumerate(dataloader):
-        if i == 690:
+        if i == 90:
             break
         x,target = data
         x.unsqueeze_(1)
