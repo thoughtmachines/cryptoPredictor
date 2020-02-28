@@ -7,20 +7,31 @@ class SeqRegressor(nn.Module):
     def __init__(self):
         super(SeqRegressor,self).__init__()
 
-        self.lstm = nn.LSTM(23,20,2)
+        self.lstm = nn.LSTM(23,20,1)
         #nn.LSTM(input_size,hidden_size,num_layers)
-        self.lin = nn.Linear(20,1)
+        self.lin = nn.Linear(140,50)
+        self.lin2 = nn.Linear(50,10)
+        self.lin3 = nn.Linear(10,5)
+        self.lin4 = nn.Linear(5,1)
         self.relu = nn.ReLU()
 
-    def forward(self,x,hidden):
+        hidden_state = torch.ones(1,1, 20)
+        cell_state = torch.ones(1,1, 20)
+        self.hidden = (hidden_state,cell_state)
+
+    def forward(self,x):
 
         """
         hidden_state = torch.randn(no_stack, batch_size, hidden_dim)
         cell_state = torch.randn(no_stack, batch_size, hidden_dim)
         """
-        out,hidden = self.lstm(x,hidden)
+        out,hidden = self.lstm(x,self.hidden)
+        out  = out.flatten().view(1,140)
         x = self.relu(out)
-        x = self.relu(self.lin(x)[6])
+        x = self.relu(self.lin(x))
+        x = self.relu(self.lin2(x))
+        x = self.relu(self.lin3(x))
+        x = self.lin4(x)
         return x
 
 

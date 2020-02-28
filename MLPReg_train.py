@@ -11,7 +11,7 @@ DEVICE = torch.device("cpu")
 
 if __name__ == "__main__":
 
-    """
+    
 
     model = MLPRegressor()
     
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     for _ in range(300):
         tots = 0
         for i,data in enumerate(dataloader):
-            if i == 690:
+            if i == 390:
                 break
             x,target = data
             x.unsqueeze_(0).unsqueeze_(0)
@@ -39,38 +39,35 @@ if __name__ == "__main__":
             loss.backward()
 
             optimizer.step()
-        torch.save(model.state_dict(),"x.pth")
+        torch.save(model.state_dict(),"xreg_small.pth")
         print(_,"\t",tots/690,"\t",out.item(),"\t",target.item())
     
     """
 
     model = SeqRegressor()
-    model.load_state_dict(torch.load("x.pth"))
-    optimizer = Adam(model.parameters(), lr=0.000001, weight_decay=0.00001)
+
+    optimizer = Adam(model.parameters(), lr=0.01, weight_decay=0.00001)
     lossfn = nn.MSELoss(reduction='mean')
 
     dataloader = cryptoData("btc")
 
     model.to(DEVICE)
 
-    for _ in range(3000):
+    for _ in range(300):
         tots = 0
-
-        
-
         for i,data in enumerate(dataloader):
             if i == 690:
                 break
             x,target = data
             x.unsqueeze_(1)
-            hidden_state = torch.ones(1,1, 20).to(DEVICE)
-            cell_state = torch.ones(1,1, 20).to(DEVICE)
-            model.lstm.hidden = (hidden_state,cell_state)
-            
+
+            hidden_state = torch.randn(2,1, 20).to(DEVICE)
+            cell_state = torch.randn(2,1, 20).to(DEVICE)
+            hidden = (hidden_state,cell_state)
 
             optimizer.zero_grad()
 
-            out = model(x)
+            out = model(x,hidden)
             out = out.squeeze()
             
             loss = lossfn(out,target)
@@ -80,3 +77,5 @@ if __name__ == "__main__":
             optimizer.step()
         torch.save(model.state_dict(),"x.pth")
         print(_,"\t",tots/690,"\t",out)
+
+    """
