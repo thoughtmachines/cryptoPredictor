@@ -3,11 +3,9 @@ import numpy as np
 import torch
 
 
-DEVICE = torch.device("cpu")
-
 class cryptoData(object):
 
-    def __init__(self,currency,test = False):
+    def __init__(self,currency,test = False,DEVICE = torch.device("cpu")):
         data = pd.read_csv("data/data/"+currency+"Final.csv")
 
         data = data.drop(["Unnamed: 0",
@@ -30,12 +28,12 @@ class cryptoData(object):
 
         self.data_clone = self.data.clone()
         self.data/=self.data.mean(0,keepdim=True)[0]
-        self.data[:,20] = self.data_clone[:,20]
+        self.data[:,5] = self.data_clone[:,5]
 
 
     def __getitem__(self,key):
         seven_day_data = self.data[key:key+7,:]
-        target = self.data_clone[key+2,20]
+        target = self.data_clone[key+6,5]
         return seven_day_data, target
 
     
