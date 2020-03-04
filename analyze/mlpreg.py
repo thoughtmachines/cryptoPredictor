@@ -12,41 +12,48 @@ from data.loader import cryptoData
 from models.model import  MLPRegressor
 
 DEVICE = torch.device("cpu")
-MODE = "test"
+MODE = "train"
 # MODE = "test"
 
 if __name__ == "__main__":
 
-    model = MLPRegressor()
+    model = MLPRegressor(stochastic=True)
 
     if MODE == "train":
         test = False
-        breaker = 690
+        breaker = 643
     else:
         test = True
-        breaker = 90
+        breaker = 223
     
     dataloader = cryptoData("btc",test=test,DEVICE=DEVICE)
-    model.load_state_dict(torch.load("weights/mlpreg_final.pth"))
+    model.load_state_dict(torch.load("weights/1preg_final_norm.pth"))
     model.to(DEVICE)
 
-    t,h = [],[]
+    model.eval(dataloader[0][0])
+
+    t,h = [8000],[8000]
+    z = 0 
     for i,data in enumerate(dataloader):
         if i == breaker:
             break
         x,target = data
-        x.unsqueeze_(0).unsqueeze_(0)
+
 
         out = model(x)
-        out = out.squeeze()
-        print(out.item(),'\t\t',target.item())
+
+        # d  = (out - h[-1]) * torch.rand((1,1)) 
+        # out+= d
 
         t.append(target.item())
         h.append(out.item())
+        z+= abs((t[-1] - h[-1])/t[-1])
 
     plt.plot(t)
     plt.plot(h)
     plt.show()
+
+    print((z/breaker))
     
 
         

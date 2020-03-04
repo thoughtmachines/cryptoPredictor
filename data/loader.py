@@ -19,25 +19,53 @@ class cryptoData(object):
                         ], axis=1)
         self.test = test
 
-        if test:
-            data = data.loc[750:850,:]
-        else:
-            data = data.loc[50:749,:]
+        data = data.iloc[:931]
+        train_data = data.iloc[50:700]
+        test_data = data.iloc[700:]
 
-        self.data = torch.Tensor(data.to_numpy()).to(DEVICE)
+        price = np.asarray(data['bitcoin-price'])
+        mean = train_data.mean()
 
-        self.data_clone = self.data.clone()
-        self.data/=self.data.mean(0,keepdim=True)[0]
-        self.data[:,5] = self.data_clone[:,5]
+        train_data = train_data/mean
+        test_data = test_data/mean
+        
+        train_data = torch.Tensor(train_data.to_numpy())
+        test_data = torch.Tensor(test_data.to_numpy())
+
+        train_data[:,5] = torch.Tensor(price[50:700])
+        test_data[:,5] = torch.Tensor(price[700:])
+
+        xtrain = []
+        ytrain = []
+
+        for i in range(len(train_data)-7):
+            xtrain.append(np.asarray(train_data[i:i+7,:]))
+            ytrain.append(np.asarray(train_data[i+7][5]))
+
+        self.xtrain = torch.Tensor(np.asarray(xtrain)).to(DEVICE)
+        self.ytrain = torch.Tensor(np.asarray(ytrain)).to(DEVICE)
+
+        xtest = []
+        ytest = []
+        for i in range(len(test_data)-7):
+            xtest.append(np.asarray(test_data[i:i+7,:]))
+            ytest.append(np.asarray(test_data[i+7][5]))
+
+        self.xtest = torch.Tensor(np.asarray(xtest)).to(DEVICE)
+        self.ytest = torch.Tensor(np.asarray(ytest)).to(DEVICE)
 
 
     def __getitem__(self,key):
-        seven_day_data = self.data[key:key+7,:]
-        target = self.data_clone[key+6,5]
+        if not self.test:
+            seven_day_data = self.xtrain[key]
+            target = self.ytrain[key]
+        else:
+            seven_day_data = self.xtest[key]
+            target  = self.ytest[key]
         return seven_day_data, target
 
     
     def __len__(self):
         if self.test:
-            return 90
-        return 680
+            return 223
+        return 643

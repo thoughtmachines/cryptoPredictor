@@ -12,7 +12,7 @@ from data.loader import cryptoData
 from models.model import  SeqRegressor
 
 DEVICE = torch.device("cpu")
-MODE = "test"
+MODE = "train"
 # MODE = "test"
 
 if __name__ == "__main__":
@@ -27,24 +27,44 @@ if __name__ == "__main__":
         breaker = 90
     
     dataloader = cryptoData("btc",test=test,DEVICE=DEVICE)
-    model.load_state_dict(torch.load("weights/lstm_final.pth"))
+    model.load_state_dict(torch.load("weights/new_lstm_final.pth"))
     model.to(DEVICE)
 
     t,h = [],[]
+    z = 0
     for i,(x,target) in enumerate(dataloader):
         if i == breaker:
             break
 
         x.unsqueeze_(1)
-        hidden_state = torch.ones(1,1, 20).to(DEVICE)
-        cell_state = torch.ones(1,1, 20).to(DEVICE)
-        model.lstm.hidden = (hidden_state,cell_state)
+        # hidden_state = torch.ones(1,1, 20).to(DEVICE)
+        # cell_state = torch.ones(1,1, 20).to(DEVICE)
+        # model.lstm.hidden = (hidden_state,cell_state)
+
+        out = model(x)
+        out = out.squeeze()
+
+        # t.append(target.item())
+        # h.append(out.item())
+        # z+= ((t[-1] - h[-1])/t[-1])**2
+
+    dataloader = cryptoData("btc",test=True,DEVICE=DEVICE)
+    for i,(x,target) in enumerate(dataloader):
+        if i == 690:
+            break
+
+        x.unsqueeze_(1)
+        # hidden_state = torch.ones(1,1, 20).to(DEVICE)
+        # cell_state = torch.ones(1,1, 20).to(DEVICE)
+        # model.lstm.hidden = (hidden_state,cell_state)
 
         out = model(x)
         out = out.squeeze()
 
         t.append(target.item())
         h.append(out.item())
+        z+= ((t[-1] - h[-1])/t[-1])**2
+    print((z/breaker)*0.5)
 
     plt.plot(t)
     plt.plot(h)
