@@ -4,19 +4,20 @@ from torch import nn
 
 class SeqRegressor(nn.Module):
 
-    def __init__(self):
+    def __init__(self,hidden_size=23):
         super(SeqRegressor,self).__init__()
 
-        self.lstm = nn.LSTM(23,20,1)
+        self.hidden_size = hidden_size
+        self.lstm = nn.LSTM(23,hidden_size,1)
 
-        self.lin = nn.Linear(140,50)
-        self.lin2 = nn.Linear(50,10)
-        self.lin3 = nn.Linear(10,5)
-        self.lin4 = nn.Linear(5,1)
+        self.layer1 = nn.Linear(hidden_size,20)
+        self.layer2 = nn.Linear(20,15)
+        self.layer3 = nn.Linear(15,7)
+        self.layer4 = nn.Linear(7,1)
         self.relu = nn.ReLU()
 
-        hidden_state = torch.ones(1,1, 20)
-        cell_state = torch.ones(1,1, 20)
+        hidden_state = torch.ones(1,1, hidden_size)
+        cell_state = torch.ones(1,1, hidden_size)
         self.hidden = (hidden_state,cell_state)
 
     def forward(self,x):
@@ -25,13 +26,14 @@ class SeqRegressor(nn.Module):
         hidden_state = torch.randn(no_stack, batch_size, hidden_dim)
         cell_state = torch.randn(no_stack, batch_size, hidden_dim)
         """
-        out,hidden = self.lstm(x,self.hidden)
-        out  = out.flatten().view(1,140)
-        x = self.relu(out)
-        x = self.relu(self.lin(x))
-        x = self.relu(self.lin2(x))
-        x = self.relu(self.lin3(x))
-        x = self.lin4(x)
+        
+        out,_ = self.lstm(x,self.hidden)
+        
+        x = self.relu(out[:,-1,:][-1])
+        x = self.relu(self.layer1(x))
+        x = self.relu(self.layer2(x))
+        x = self.relu(self.layer3(x))
+        x = self.relu(self.layer4(x))
         return x
 
 

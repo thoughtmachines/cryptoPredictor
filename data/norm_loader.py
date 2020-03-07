@@ -5,9 +5,9 @@ import torch
 
 class cryptoData(object):
 
-    def __init__(self,currency,test = False,DEVICE = torch.device("cpu")):
+    def __init__(self,currency,test = False,DEVICE = torch.device("cpu"),window=7):
         data = pd.read_csv("data/data/"+currency+"Final.csv")
-
+        window = 7
         data = data.drop(["Unnamed: 0",
                         "Unnamed: 0_x",
                         "timestamp",
@@ -26,7 +26,7 @@ class cryptoData(object):
         else:
             var = "litecoin-price"
 
-        data = data.iloc[:931]
+        data = data.iloc[:901]
         train_data = data.iloc[50:700]
         test_data = data.iloc[700:]
 
@@ -44,35 +44,40 @@ class cryptoData(object):
 
         xtrain = []
         ytrain = []
-
-        for i in range(len(train_data)-7):
-            xtrain.append(np.asarray(train_data[i:i+7,:]))
-            ytrain.append(np.asarray(train_data[i+7][5]))
+        self.window = window
+        for i in range(len(train_data)-window):
+            xtrain.append(np.asarray(train_data[i:i+window,:]))
+            ytrain.append(np.asarray(train_data[i+window][5]))
 
         self.xtrain = torch.Tensor(np.asarray(xtrain)).to(DEVICE)
         self.ytrain = torch.Tensor(np.asarray(ytrain)).to(DEVICE)
+        self.pmax = torch.mean(self.ytrain)
 
         xtest = []
         ytest = []
-        for i in range(len(test_data)-7):
-            xtest.append(np.asarray(test_data[i:i+7,:]))
-            ytest.append(np.asarray(test_data[i+7][5]))
+        for i in range(len(test_data)-window):
+            xtest.append(np.asarray(test_data[i:i+window,:]))
+            ytest.append(np.asarray(test_data[i+window][5]))
 
         self.xtest = torch.Tensor(np.asarray(xtest)).to(DEVICE)
         self.ytest = torch.Tensor(np.asarray(ytest)).to(DEVICE)
 
+        self.xtrain[:,:,5] /= self.pmax
+        self.ytrain = self.ytrain/self.pmax
+        self.xtest[:,:,5] = self.xtest[:,:,5]/self.pmax
+        self.ytest = self.ytest/self.pmax
 
     def __getitem__(self,key):
         if not self.test:
             seven_day_data = self.xtrain[key]
-            target = self.ytrain[key]
+            target = self.ytrain[key].view(1,1)
         else:
             seven_day_data = self.xtest[key]
-            target  = self.ytest[key]
+            target  = self.ytest[key].view(1,1)
         return seven_day_data, target
 
     
     def __len__(self):
         if self.test:
-            return 223
-        return 643
+            return 230-self.window
+        return 650-self.window

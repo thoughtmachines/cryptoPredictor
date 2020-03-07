@@ -17,20 +17,23 @@ MODE = "test"
 
 if __name__ == "__main__":
 
-    model = MLPRegressor(stochastic=True)
-
     if MODE == "train":
         test = False
-        breaker = 643
+        
     else:
         test = True
-        breaker = 223
+
+    model = MLPRegressor()
+    model.load_state_dict(torch.load("weights/btc_mlp.pth"))
     
+
     dataloader = cryptoData("btc",test=test,DEVICE=DEVICE)
-    model.load_state_dict(torch.load("weights/1preg_final_norm.pth"))
+
     model.to(DEVICE)
 
-    model.eval(dataloader[0][0])
+    breaker = len(dataloader)
+
+    # model.eval(dataloader[0][0])
 
     t,h = [],[]
     z = 0 
