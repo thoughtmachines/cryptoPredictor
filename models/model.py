@@ -70,9 +70,13 @@ class MLPRegressor(nn.Module):
         x = self.relu(self.layer5(x))
         memory.append(x)
 
+        x = self.relu(self.layer6(x))
+        memory.append(x)
+
         self.memory = memory
     
     def forward(self,x):
+
         x = x.flatten().view(1,161)
 
         x = self.relu(self.layer1(x))
@@ -101,4 +105,5 @@ class MLPRegressor(nn.Module):
             self.memory[4] = x.clone()
 
         x = self.relu(self.layer6(x))
+        
         return x

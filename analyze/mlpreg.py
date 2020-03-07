@@ -12,7 +12,7 @@ from data.loader import cryptoData
 from models.model import  MLPRegressor
 
 DEVICE = torch.device("cpu")
-MODE = "train"
+MODE = "test"
 # MODE = "test"
 
 if __name__ == "__main__":
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     model.eval(dataloader[0][0])
 
-    t,h = [8000],[8000]
+    t,h = [],[]
     z = 0 
     for i,data in enumerate(dataloader):
         if i == breaker:
@@ -41,9 +41,6 @@ if __name__ == "__main__":
 
 
         out = model(x)
-
-        # d  = (out - h[-1]) * torch.rand((1,1)) 
-        # out+= d
 
         t.append(target.item())
         h.append(out.item())

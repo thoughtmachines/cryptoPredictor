@@ -19,11 +19,18 @@ class cryptoData(object):
                         ], axis=1)
         self.test = test
 
+        if currency == "btc":
+            var = "bitcoin-price"
+        elif currency == "eth":
+            var = "ethereum-price"
+        else:
+            var = "litecoin-price"
+
         data = data.iloc[:931]
         train_data = data.iloc[50:700]
         test_data = data.iloc[700:]
 
-        price = np.asarray(data['bitcoin-price'])
+        price = np.asarray(data[var])
         mean = train_data.mean()
 
         train_data = train_data/mean
