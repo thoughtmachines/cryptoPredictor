@@ -103,7 +103,7 @@ class MLPRegressor(nn.Module):
 
         x = self.relu(self.layer5(x))
         if self.stochastic:
-            x+= (x- self.memory[4])* torch.rand(x.shape)* 1
+            x+= (x- self.memory[4])* torch.rand(x.shape)* 0.1
             self.memory[4] = x.clone()
 
         x = self.relu(self.layer6(x))

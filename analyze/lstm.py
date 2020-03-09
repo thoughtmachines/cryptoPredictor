@@ -8,7 +8,7 @@ from torch.optim import Adam
 from torch.nn.init import xavier_normal as xavier
 import  matplotlib.pyplot as plt
 
-from data.loader import cryptoData
+from data.unorm_loader import cryptoData
 from models.model import  SeqRegressor
 
 DEVICE = torch.device("cpu")
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         breaker = 90
     
     dataloader = cryptoData("btc",test=test,DEVICE=DEVICE)
-    model.load_state_dict(torch.load("weights/new_lstm_final.pth"))
+    model.load_state_dict(torch.load("weights/unorm_btc_lstm.pth"))
     model.to(DEVICE)
 
     t,h = [],[]
@@ -44,9 +44,9 @@ if __name__ == "__main__":
         out = model(x)
         out = out.squeeze()
 
-        # t.append(target.item())
-        # h.append(out.item())
-        # z+= ((t[-1] - h[-1])/t[-1])**2
+        t.append(target.item())
+        h.append(out.item())
+        z+= abs((t[-1] - h[-1])/t[-1])
 
     dataloader = cryptoData("btc",test=True,DEVICE=DEVICE)
     for i,(x,target) in enumerate(dataloader):
@@ -61,10 +61,10 @@ if __name__ == "__main__":
         out = model(x)
         out = out.squeeze()
 
-        t.append(target.item())
-        h.append(out.item())
-        z+= ((t[-1] - h[-1])/t[-1])**2
-    print((z/breaker)*0.5)
+        t.append(target.item()*dataloader.pmax)
+        h.append(out.item()*dataloader.pmax)
+        z+= abs((t[-1] - h[-1])/t[-1])
+    print((z/breaker))
 
     plt.plot(t)
     plt.plot(h)
