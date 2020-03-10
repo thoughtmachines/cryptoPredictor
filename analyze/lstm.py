@@ -8,7 +8,7 @@ from torch.optim import Adam
 from torch.nn.init import xavier_normal as xavier
 import  matplotlib.pyplot as plt
 
-from data.unorm_loader import cryptoData
+from data.norm_loader import cryptoData
 from models.model import  SeqRegressor
 
 DEVICE = torch.device("cpu")
@@ -17,19 +17,21 @@ MODE = "train"
 
 if __name__ == "__main__":
 
-    model = SeqRegressor()
+    model = SeqRegressor(stochastic=True)
 
     if MODE == "train":
         test = False
-        breaker = 690
+
     else:
         test = True
-        breaker = 90
+
     
-    dataloader = cryptoData("btc",test=test,DEVICE=DEVICE)
-    model.load_state_dict(torch.load("weights/unorm_btc_lstm.pth"))
+    dataloader = cryptoData("eth",test=test,DEVICE=DEVICE)
+    model.load_state_dict(torch.load("weights/_norm_eth_lstm.pth"))
     model.to(DEVICE)
 
+    model.eval(dataloader[0][0].unsqueeze(1))
+    breaker = len(dataloader)
     t,h = [],[]
     z = 0
     for i,(x,target) in enumerate(dataloader):
@@ -37,32 +39,28 @@ if __name__ == "__main__":
             break
 
         x.unsqueeze_(1)
-        # hidden_state = torch.ones(1,1, 20).to(DEVICE)
-        # cell_state = torch.ones(1,1, 20).to(DEVICE)
-        # model.lstm.hidden = (hidden_state,cell_state)
+
+
+        out = model(x)
+        out = out.squeeze()
+
+        # t.append(target.item())
+        # h.append(out.item())
+        # z+= abs((t[-1] - h[-1])/t[-1])
+
+    dataloader = cryptoData("eth",test=True,DEVICE=DEVICE)
+    breaker = len(dataloader)
+    for i,(x,target) in enumerate(dataloader):
+        if i == 690:
+            break
+
+        x.unsqueeze_(1)
 
         out = model(x)
         out = out.squeeze()
 
         t.append(target.item())
         h.append(out.item())
-        z+= abs((t[-1] - h[-1])/t[-1])
-
-    dataloader = cryptoData("btc",test=True,DEVICE=DEVICE)
-    for i,(x,target) in enumerate(dataloader):
-        if i == 690:
-            break
-
-        x.unsqueeze_(1)
-        # hidden_state = torch.ones(1,1, 20).to(DEVICE)
-        # cell_state = torch.ones(1,1, 20).to(DEVICE)
-        # model.lstm.hidden = (hidden_state,cell_state)
-
-        out = model(x)
-        out = out.squeeze()
-
-        t.append(target.item()*dataloader.pmax)
-        h.append(out.item()*dataloader.pmax)
         z+= abs((t[-1] - h[-1])/t[-1])
     print((z/breaker))
 

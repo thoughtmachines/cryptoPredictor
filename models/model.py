@@ -1,12 +1,14 @@
 import torch
 from torch import nn
+import random
+
 
 
 class SeqRegressor(nn.Module):
 
-    def __init__(self,hidden_size=23):
+    def __init__(self,hidden_size=23,stochastic=False):
         super(SeqRegressor,self).__init__()
-
+        self.stochastic = stochastic
         self.hidden_size = hidden_size
         self.lstm = nn.LSTM(23,hidden_size,1)
 
@@ -20,6 +22,24 @@ class SeqRegressor(nn.Module):
         cell_state = torch.ones(1,1, hidden_size)
         self.hidden = (hidden_state,cell_state)
 
+    def eval(self,x):
+        memory = []
+
+        out,_ = self.lstm(x,self.hidden)
+
+        x = self.relu(out[:,-1,:][-1])
+        memory.append(x)
+        x = self.relu(self.layer1(x))
+        memory.append(x)
+        x = self.relu(self.layer2(x))
+        memory.append(x)
+        x = self.relu(self.layer3(x))
+        memory.append(x)
+        x = self.relu(self.layer4(x))
+
+        self.memory = memory
+
+
     def forward(self,x):
 
         """
@@ -29,10 +49,27 @@ class SeqRegressor(nn.Module):
         
         out,_ = self.lstm(x,self.hidden)
         
-        x = self.relu(out[:,-1,:][-1])
+        x = out[:,-1,:][-1]
+        x = self.relu(x)
+        if self.stochastic:
+            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1
+            self.memory[0] = x.clone()
+
         x = self.relu(self.layer1(x))
+        if self.stochastic:
+            x+= (x- self.memory[1])* torch.rand(x.shape) * 0.1
+            self.memory[1] = x.clone()
+
         x = self.relu(self.layer2(x))
+        if self.stochastic:
+            x+= (x- self.memory[2])* torch.rand(x.shape) * 0.1
+            self.memory[2] = x.clone()
+
         x = self.relu(self.layer3(x))
+        if self.stochastic:
+            x+= (x- self.memory[3])* torch.rand(x.shape) * 1
+            self.memory[3] = x.clone()
+
         x = self.relu(self.layer4(x))
         return x
 
@@ -83,7 +120,7 @@ class MLPRegressor(nn.Module):
 
         x = self.relu(self.layer1(x))
         if self.stochastic:
-            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1
+            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1 
             self.memory[0] = x.clone()
 
         x = self.relu(self.layer2(x))
