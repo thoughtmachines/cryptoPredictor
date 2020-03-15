@@ -67,7 +67,7 @@ class SeqRegressor(nn.Module):
 
         x = self.relu(self.layer3(x))
         if self.stochastic:
-            x+= (x- self.memory[3])* torch.rand(x.shape) * 1
+            x+= (x- self.memory[3])* torch.rand(x.shape) * 0.1
             self.memory[3] = x.clone()
 
         x = self.relu(self.layer4(x))

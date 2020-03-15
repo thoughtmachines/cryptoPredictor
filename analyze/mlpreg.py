@@ -23,11 +23,11 @@ if __name__ == "__main__":
     else:
         test = True
 
-    model = MLPRegressor(stochastic=True)
-    model.load_state_dict(torch.load("weights/_unorm_eth_mlp.pth"))
+    model = MLPRegressor()
+    model.load_state_dict(torch.load("weights/_unorm_ltc_mlp.pth"))
     
 
-    dataloader = cryptoData("eth",test=test,DEVICE=DEVICE)
+    dataloader = cryptoData("ltc",test=test,DEVICE=DEVICE)
 
     model.to(DEVICE)
 
@@ -37,6 +37,8 @@ if __name__ == "__main__":
 
     t,h = [],[]
     z = 0 
+    m = 0
+    r=0
     for i,data in enumerate(dataloader):
         if i == breaker:
             break
@@ -45,15 +47,24 @@ if __name__ == "__main__":
 
         out = model(x)
 
-        t.append(target.item())
-        h.append(out.item())
+        t.append(target.item()*dataloader.pmax.item())
+        h.append(out.item()*dataloader.pmax.item())
         z+= abs((t[-1] - h[-1])/t[-1])
+        m+= abs((t[-1] - h[-1]))**2
+        r+= abs((t[-1] - h[-1])/t[-1])**2
 
-    plt.plot(t)
-    plt.plot(h)
-    plt.show()
+    # plt.plot(t)
+    # plt.plot(h)
+    # plt.show()
 
-    print((z/breaker))
+    # print("MAPE",z/breaker * 100)
+    # print("MAE",z/breaker)
+    # print("RMSE",(r/breaker)**0.5)
+    # print("MSE",m/breaker)
     
+    print(z/breaker * 100)
+    print(z/breaker)
+    print((r/breaker)**0.5)
+    print(m/breaker)
 
         

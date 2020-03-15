@@ -8,16 +8,16 @@ from torch.optim import Adam
 from torch.nn.init import xavier_normal as xavier
 import  matplotlib.pyplot as plt
 
-from data.norm_loader import cryptoData
+from data.unorm_loader import cryptoData
 from models.model import  SeqRegressor
 
 DEVICE = torch.device("cpu")
-MODE = "train"
+MODE = "test"
 # MODE = "test"
 
 if __name__ == "__main__":
 
-    model = SeqRegressor(stochastic=True)
+    model = SeqRegressor()
 
     if MODE == "train":
         test = False
@@ -26,14 +26,16 @@ if __name__ == "__main__":
         test = True
 
     
-    dataloader = cryptoData("eth",test=test,DEVICE=DEVICE)
-    model.load_state_dict(torch.load("weights/_norm_eth_lstm.pth"))
+    dataloader = cryptoData("btc",test=test,DEVICE=DEVICE)
+    model.load_state_dict(torch.load("weights/o/mape_unorm_btc_lstm.pth"))
     model.to(DEVICE)
 
     model.eval(dataloader[0][0].unsqueeze(1))
     breaker = len(dataloader)
     t,h = [],[]
-    z = 0
+    z = 0 
+    m = 0
+    r=0
     for i,(x,target) in enumerate(dataloader):
         if i == breaker:
             break
@@ -44,29 +46,14 @@ if __name__ == "__main__":
         out = model(x)
         out = out.squeeze()
 
-        # t.append(target.item())
-        # h.append(out.item())
-        # z+= abs((t[-1] - h[-1])/t[-1])
-
-    dataloader = cryptoData("eth",test=True,DEVICE=DEVICE)
-    breaker = len(dataloader)
-    for i,(x,target) in enumerate(dataloader):
-        if i == 690:
-            break
-
-        x.unsqueeze_(1)
-
-        out = model(x)
-        out = out.squeeze()
-
-        t.append(target.item())
-        h.append(out.item())
+        t.append(target.item()*dataloader.pmax.item())
+        h.append(out.item()*dataloader.pmax.item())
         z+= abs((t[-1] - h[-1])/t[-1])
-    print((z/breaker))
+        m+= abs((t[-1] - h[-1]))**2
+        r+= abs((t[-1] - h[-1])/t[-1])**2
+    print(z/breaker * 100)
+    print(z/breaker)
+    print((r/breaker)**0.5)
+    print(m/breaker)
 
-    plt.plot(t)
-    plt.plot(h)
-    plt.show()
-    
 
-        

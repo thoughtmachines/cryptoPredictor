@@ -51,7 +51,7 @@ class cryptoData(object):
 
         self.xtrain = torch.Tensor(np.asarray(xtrain)).to(DEVICE)
         self.ytrain = torch.Tensor(np.asarray(ytrain)).to(DEVICE)
-        self.pmax = 1
+        self.pmax = torch.Tensor([1])
 
         xtest = []
         ytest = []
