@@ -52,22 +52,22 @@ class SeqRegressor(nn.Module):
         x = out[:,-1,:][-1]
         x = self.relu(x)
         if self.stochastic:
-            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1
+            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1 * 1.2
             self.memory[0] = x.clone()
 
         x = self.relu(self.layer1(x))
         if self.stochastic:
-            x+= (x- self.memory[1])* torch.rand(x.shape) * 0.1
+            x+= (x- self.memory[1])* torch.rand(x.shape) * 0.1* 1.2
             self.memory[1] = x.clone()
 
         x = self.relu(self.layer2(x))
         if self.stochastic:
-            x+= (x- self.memory[2])* torch.rand(x.shape) * 0.1
+            x+= (x- self.memory[2])* torch.rand(x.shape) * 0.1* 1.2
             self.memory[2] = x.clone()
 
         x = self.relu(self.layer3(x))
         if self.stochastic:
-            x+= (x- self.memory[3])* torch.rand(x.shape) * 0.1
+            x+= (x- self.memory[3])* torch.rand(x.shape) * 0.1* 1.2
             self.memory[3] = x.clone()
 
         x = self.relu(self.layer4(x))
@@ -120,27 +120,27 @@ class MLPRegressor(nn.Module):
 
         x = self.relu(self.layer1(x))
         if self.stochastic:
-            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1 
+            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1 * 1.2
             self.memory[0] = x.clone()
 
         x = self.relu(self.layer2(x))
         if self.stochastic:
-            x+= (x- self.memory[1])* torch.rand(x.shape)* 0.1
+            x+= (x- self.memory[1])* torch.rand(x.shape)* 0.1* 1.2
             self.memory[1] = x.clone()
 
         x = self.relu(self.layer3(x))
         if self.stochastic:
-            x+= (x- self.memory[2])* torch.rand(x.shape)* 0.1
+            x+= (x- self.memory[2])* torch.rand(x.shape)* 0.1* 1.2
             self.memory[2] = x.clone()
 
         x = self.relu(self.layer4(x))
         if self.stochastic:
-            x+= (x- self.memory[3])* torch.rand(x.shape)* 0.1
+            x+= (x- self.memory[3])* torch.rand(x.shape)* 0.1* 1.2
             self.memory[3] = x.clone()
 
         x = self.relu(self.layer5(x))
         if self.stochastic:
-            x+= (x- self.memory[4])* torch.rand(x.shape)* 0.1
+            x+= (x- self.memory[4])* torch.rand(x.shape)* 0.1* 1.2
             self.memory[4] = x.clone()
 
         x = self.relu(self.layer6(x))

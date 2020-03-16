@@ -11,7 +11,7 @@ import  matplotlib.pyplot as plt
 from data.norm_loader import cryptoData
 from models.model import  SeqRegressor
 
-DEVICE = torch.device("cpu")
+DEVICE = torch.device("cpu"),
 MODE = "test"
 # MODE = "test"
 
