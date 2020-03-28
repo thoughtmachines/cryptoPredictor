@@ -1,8 +1,7 @@
 import torch
 from torch import nn
 import random
-
-
+from torch.autograd import Variable
 
 class SeqRegressor(nn.Module):
 
@@ -25,6 +24,9 @@ class SeqRegressor(nn.Module):
         if coin is not None and model is not None:
             name = "weights/mape_"+model+"_"+coin+"_lstm.pth"
             self.load_state_dict(torch.load(name))
+        
+        self.SM = stochastic_module(_type="mlp",coin=coin,model=model)
+
 
     def eval(self,x):
         memory = []
@@ -56,22 +58,22 @@ class SeqRegressor(nn.Module):
         x = out[:,-1,:][-1]
         x = self.relu(x)
         if self.stochastic:
-            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1 * 1.2
+            x+= (x- self.memory[0])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[0])
             self.memory[0] = x.clone()
 
         x = self.relu(self.layer1(x))
         if self.stochastic:
-            x+= (x- self.memory[1])* torch.rand(x.shape) * 0.1* 1.2
+            x+= (x- self.memory[1])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[1])
             self.memory[1] = x.clone()
 
         x = self.relu(self.layer2(x))
         if self.stochastic:
-            x+= (x- self.memory[2])* torch.rand(x.shape) * 0.1* 1.2
+            x+= (x- self.memory[2])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[2])
             self.memory[2] = x.clone()
 
         x = self.relu(self.layer3(x))
         if self.stochastic:
-            x+= (x- self.memory[3])* torch.rand(x.shape) * 0.1* 1.2
+            x+= (x- self.memory[3])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[3])
             self.memory[3] = x.clone()
 
         x = self.relu(self.layer4(x))
@@ -84,6 +86,8 @@ class MLPRegressor(nn.Module):
         super(MLPRegressor,self).__init__()
         self.stochastic = stochastic
         self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+        self.SM = stochastic_module(_type="mlp",coin=coin,model=model)
 
         self.layer1 = nn.Linear(161,130)
         self.layer2 = nn.Linear(130,100)
@@ -128,29 +132,40 @@ class MLPRegressor(nn.Module):
 
         x = self.relu(self.layer1(x))
         if self.stochastic:
-            x+= (x- self.memory[0])* torch.rand(x.shape) * 0.1 * 1.2
+            x+= (x- self.memory[0])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[0])
             self.memory[0] = x.clone()
 
         x = self.relu(self.layer2(x))
         if self.stochastic:
-            x+= (x- self.memory[1])* torch.rand(x.shape)* 0.1* 1.2
+            x+= (x- self.memory[1])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[1])
             self.memory[1] = x.clone()
 
         x = self.relu(self.layer3(x))
         if self.stochastic:
-            x+= (x- self.memory[2])* torch.rand(x.shape)* 0.1* 1.2
+            x+= (x- self.memory[2])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[2])
             self.memory[2] = x.clone()
 
         x = self.relu(self.layer4(x))
         if self.stochastic:
-            x+= (x- self.memory[3])* torch.rand(x.shape)* 0.1* 1.2
+            x+= (x- self.memory[3])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[3])
             self.memory[3] = x.clone()
 
         x = self.relu(self.layer5(x))
         if self.stochastic:
-            x+= (x- self.memory[4])* torch.rand(x.shape)* 0.1* 1.2
+            x+= (x- self.memory[4])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[4])
             self.memory[4] = x.clone()
 
         x = self.relu(self.layer6(x))
         
         return x
+
+class stochastic_module(nn.Module):
+
+    def __init__(self,_type="mlp",coin=None,model=None):
+        """type: mlp/lstm"""
+        super(stochastic_module,self).__init__()
+      
+        name = "weights/stochastic/"+model+"_"+coin+"_"+_type+".pt"
+        tensor = torch.load(name)
+        self.gamma = Variable(tensor,reqiures_grad=True)
+
