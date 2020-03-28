@@ -6,7 +6,7 @@ import random
 
 class SeqRegressor(nn.Module):
 
-    def __init__(self,hidden_size=23,stochastic=False):
+    def __init__(self,hidden_size=23,stochastic=False,coin=None,model=None):
         super(SeqRegressor,self).__init__()
         self.stochastic = stochastic
         self.hidden_size = hidden_size
@@ -21,6 +21,10 @@ class SeqRegressor(nn.Module):
         hidden_state = torch.ones(1,1, hidden_size)
         cell_state = torch.ones(1,1, hidden_size)
         self.hidden = (hidden_state,cell_state)
+
+        if coin is not None and model is not None:
+            name = "weights/mape_"+model+"_"+coin+"_lstm.pth"
+            self.load_state_dict(torch.load(name))
 
     def eval(self,x):
         memory = []
@@ -76,7 +80,7 @@ class SeqRegressor(nn.Module):
 
 class MLPRegressor(nn.Module):
 
-    def __init__(self,stochastic=False,x=None):
+    def __init__(self,stochastic=False,coin=None,model=None):
         super(MLPRegressor,self).__init__()
         self.stochastic = stochastic
         self.relu = nn.ReLU()
@@ -87,6 +91,10 @@ class MLPRegressor(nn.Module):
         self.layer4 = nn.Linear(50,25)
         self.layer5 = nn.Linear(25,10)
         self.layer6 = nn.Linear(10,1)
+
+        if coin is not None and model is not None:
+            name = "weights/_"+model+"_"+coin+"_mlp.pth"
+            self.load_state_dict(torch.load(name))
 
     
 

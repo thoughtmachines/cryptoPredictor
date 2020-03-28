@@ -1,0 +1,629 @@
+\documentclass[journal]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\title{Modelling The Cryptocurrency Market Using Stochastic Neural Networks}
+\author{17bcecrypto}
+\date{February 2020}
+\usepackage{cite}
+\usepackage[sorting=none]{biblatex}
+\addbibresource{references.bib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{calc}
+\usepackage{relsize}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{tabulary}
+\usepackage{multirow}
+\usepackage{multicol}
+\newlength{\depthofsumsign}
+\setlength{\depthofsumsign}{\depthof{$\sum$}}
+\newlength{\totalheightofsumsign}
+\newlength{\heightanddepthofargument}
+
+\newcommand{\nsum}[1][1.5]{% only for \displaystyle
+    \mathop{%
+        \raisebox
+            {-#1\depthofsumsign+1\depthofsumsign}
+            {\scalebox
+                {#1}
+                {$\displaystyle\sum$}%
+            }
+    }
+}
+
+\newcolumntype{b}{X}
+\newcolumntype{s}{>{\hsize=.35\hsize}X}
+\newcolumntype{m}{>{\hsize=.5\hsize}X}
+\newcommand{\heading}[1]{\multicolumn{1}{c}{#1}}
+
+\begin{document}
+
+\maketitle
+\begin{abstract}
+    
+\end{abstract}
+\begin{IEEEkeywords}
+Cryptocurrency
+\end{IEEEkeywords}
+\section{Introduction}
+With the advances in technology, there has been a paradigm shift in the mode of transactions from physical payments like cash and cheques to digital transactions. One important aspect of using currency, either as a medium of transaction or as an asset, is knowing its expected value in the future. To a great extent, the value and stability of a currency depend on the controlling authority, which in the case of fiat currencies is a central government. Governmental bureaucracy and interference in the financial system can lead to unforeseen consequences of devastating scales, as seen in Venezuela today. The crisis in Venezuela has outdone the collapse of the Great Depression, with inflation rates touching 10,000,000\%, according to the IMF. Another factor that affects the value of a currency, is the consistency and security of the platform that the currency is deployed on. Conventional digital cash is prone to the flaw of double-spending. Once an item is purchased with some physical cash, the cash cannot be used again. But that isn’t the case with digital cash. It is a major drawback of using digital cash where-in, the token used for the transaction can be reused or even counterfeited. Digital currencies in cyberspace are exposed to security flaws which may lead to transaction data manipulation. With an increasing number of such flaws, traditional currencies fall prey to instability and devaluation. 
+
+A plausible solution to these problems is blockchain-based cryptocurrencies. Blockchain is the storing of information across a network providing security, decentralization, and transparency, which is precisely what is needed for an effective currency. Cryptocurrencies, unlike conventional money, use cryptographical ciphers to conduct financial transactions.  Over the past decade, digital finance has grown exponentially, with cryptocurrencies at the helm of this innovative stride forward. The market capitalization of cryptocurrencies is calculated to \$266 billion and is projected to have a growth of 11.9\% by 2024 as per CAGR reports. [https://coinmarketcap.com/charts/] The crucial feature of a cryptocurrency is it cannot be controlled by a central authority due to its decentralized nature inherited from blockchain and thus it is immune to corruption. Due to this, cryptocurrencies are naturally robust towards corruption induced recessions as opposed to fiat currencies. Cryptocurrencies avert the problem of double-spending through multiple verifications from the neighboring nodes in the blockchain network. As the number of confirmation increases, the transaction becomes more and more reliable and irreversible.  Transactional records in the ledger of blockchain are immutable, by the fact that a record is virtually impossible to alter in all network nodes. Thus, after a successful transaction, the record can not be manipulated. Another advantage that comes with using cryptocurrencies is that they have minimal peer-to-peer transaction charges therefore they exclude exorbitant middleman fees charged by banks and exchanges. 
+
+As a consequence of the aforementioned advantageous characteristics and global access to cryptocurrencies, they could be used as a medium of transaction, as well as a store of wealth. However, the value of cryptocurrencies still heavily relies on erratic market trends and social sentiment. Another factor that affects the stability and value of cryptocurrencies is the political perception of the new technology and legislature that follows. Other internal factors like mining difficulty, transaction fees, hash-rate, and market volume also have an effect on the price of a given cryptocurrency. 
+
+Having vast amounts of openly available data on the cryptocurrencies market and social trends information, we naturally arrive on machine learning algorithms for solving the problem of forecasting prices of cryptocurrencies. Machine learning algorithms are a set of methods for learning mathematical models from data without explicitly programming the computer to do a specific task. With the increase in the complexity of the data, as is the case for the cryptocurrency market, there is a need for more complex representations of models. Deep learning models, specifically recurrent neural networks, are biased to solve the time-series problem of predicting the prices of cryptocurrencies. Numerous research has gone into the prediction of the value of equity and securities using machine learning and deep learning algorithms. However, comparatively fewer research work has been done on forecasting the price of cryptocurrencies.
+
+
+
+\subsection{Motivation}
+Cryptocurrencies were primarily created as a means of money exchange. But in the past few years, we have seen that trading of cryptocurrencies has been seen as an attractive investment opportunity. It is the prevalent opinion of stock market professionals and other investors that the cryptocurrency market is the most uncertain place for investment due to its volatility and heavy reliance on social sentiment. The value of Cryptocurrencies is primarily affected by a large number of factors like social sentiment, legislature, past price trends, and trade volumes. A significant amount of research work to anticipate cryptocurrency prices using machine learning techniques has already been carried out in the past few years. Firstly, in this paper, we aim to acquaint the reader with these methods and provide an analysis on the results of the said methods. Secondly, knowing that predicting market prices is an inherent problem wherein historical information is of utmost importance, we aim to present a model that is biased to memorize temporal patterns to infer prices of a market commodity in the short-term future.
+
+\subsection{Contribution [TODO: add a few lines below]}
+The substantial contributions of this paper are as mentioned below.
+\begin{itemize}
+\item We present various machine learning and deep learning methods that have been used to predict cryptocurrency prices and analyze their results.
+\item We experiment on prevalent machine learning models and provide analysis on their regression output results based on Return On Investment (ROI), Mean Absolute Percentage Error (MAPE), Root Mean Square Error (RMSE) and Mean Absolute Error (MAE).
+\item We introduce a novel stochastic neural network model that performs a layer-wise random walk along with capturing market dependencies, thus addressing the problem of erratic fluctuations in the prices of cryptocurrencies.
+\end{itemize}
+
+\subsection{Organization}
+This paper is organized into five parts. The first part consists of introduction about the cryptocurrency and its market and gives the motivation for predicting cryptocurrency markets. The second part delves with the previous work that has been done in this subject. The third part explains the concept of stochasticity and its application in the case of cryptocurrency market. The fourth part consists of the experimentation of models for predicting cryptocurrency prices and the result obtained. The last part consists of the conclusion and future work that can be done in this area of research.
+
+\section{Related work}
+A substantial amount of research has been carried in the prediction of stability and prices of equity and other market assets over the past decades. However, due to its newfangledness, there is comparatively lesser research work done on cryptocurrencies. Nonetheless, there is an increasing trend in the research effort done to anticipate the prices of cryptocurrencies. In this section, we aim to present pivotal milestones in the field. Here, we acquaint the reader with a diversified set of machine learning approaches that have been used to predict price trends of various currencies.
+
+\subsection{\textbf{Regression}}
+The fundamental task in modelling a cryptocurrency is predicting the price given the priors. A simplistic approach to forecasting the price over a continuous space is by regression. Regression is a type of statistical method to determine the relationship between a dependant variable and one or more independent variables. The relationship present is represented as sum of products of independent variables with some relational constant weight. Linear and multivariate regression have been used to predict values over a continuous space. Linear regression shows the relationship between one independent variable and one dependent variable, whereas multivariate regression shows the relation between one dependent variable and multiple independent variables.[Generally, gradient descent as the first order iterative optimization algorithm is used over appropriate loss function such as mean squared loss. TODO]
+\begin{equation}
+  y = \theta_{0} + \theta_{1}x_{1} + \theta_{2}x_{2} + ... + \theta_{n}x_{n}  
+\end{equation}
+
+
+% \begin{algorithm}[H]
+%  \caption{Algorithm for ...}
+%  \begin{algorithmic}[1]
+%  \renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%  \renewcommand{\algorithmicensure}{\textbf{Output:}}
+%  \REQUIRE in
+%  \ENSURE  out
+%  \\ \textit{Initialisation} :
+%   \STATE first statement
+%  \\ \textit{LOOP Process}
+%   \FOR {$i = l-2$ to $0$}
+%   \STATE statements..
+%   \IF {($i \ne 0$)}
+%   \STATE statement..
+%   \ENDIF
+%   \ENDFOR
+%  \RETURN $P$
+%  \end{algorithmic}
+%  \end{algorithm}
+
+\begin{algorithm}[H]
+ \caption{Vectorized multivariate linear regression learning using gradient descent with learning rate $\alpha$ and Mean Square Error (MSE) loss function }
+ \begin{algorithmic}
+ \renewcommand{\algorithmicrequire}{\textbf{Require:}}
+ \REQUIRE X\textsubscript{train}, market data 
+ \REQUIRE Y\textsubscript{train}, next day prediction
+ \\ \textit{Initialization:}
+ \\   initialize weight vector $\theta$ from a random distribution
+ \\ \textit{Training:}
+ \\ \REPEAT
+    \STATE  $Y\textsubscript{predicted} \gets X\textsubscript{train}\theta$
+    \STATE  $loss \gets \frac{1}{2m}\sum(Y\textsubscript{predicted} - Y\textsubscript{train})^2$
+    \STATE $\theta \gets \theta - \alpha\frac{\partial loss}{\partial \theta}$
+    \UNTIL{convergence}
+  
+\end{algorithmic}
+\end{algorithm}
+ 
+
+Saad et al.\cite{Saad} use a multivariate regression model trained using gradient descent over mean square error. Features such as price, mining difficulty, hashrate, user count,etc were used regress and obtain the predicted price. They achieved a mean absolute error of 0.0162 and 0.0563 over bitcoin and ethereum respectively when testing over half of the dataset. Mittal et al.\cite{Mittal} extended usage of regression to social sentiment. They exhibited the positive correlation between the price fluctuations of Bitcoin and social sentiment. They showed that there is a significant correlation between Google trends, tweet sentiment and tweet volume. Linear regression and polynomial regression were used to predict the prices. They evaluated the models by calculating frequency of correct predictions within the bounds of margin accuracy. An accuracy of 77.01\% and 66.66\% was observed in correctly predicting the trend of price using tweet volume and google trends respectively. 
+
+\subsection{\textbf{Artificial Neural Networks}}
+Following Moore’s Law, faster and more efficient compute power has been harnessed to train Artificial Neural Networks(ANN). An obvious issue with regression models is that they are unable to learn multi-leveled dependencies among the features. Neural nets can effectively learn and represent linear and non-linear dependencies between key variables and the dependent output variable. They consist of input layers that are further connected to a hierarchy of hidden layers which in turn pass learned information to the output layer. Each edge connecting the neurons in different layers comprise of weights and bias representing the relation between the connected neurons. Activation functions are applied after linear matrix computation is carried out. These functions are responsible for introducing nonlinearities into the network which essentially help in curve fitting. Commonly used non-linear activation functions are Sigmoid and Tanh functions. The architecture of the network determines the kind of dependencies the neural network learns. Neural nets are trained using a learning algorithm known as backpropagation. The training process begins by initiating network weights and biases randomly, and then iteratively calculating error and propagating error signal as gradients of weights. Weights are updated iteratively till a feasible set of weight values are obtained.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=7cm]{NN1.png}
+    \caption{Neural Networks 1}
+    \label{fig:Neural Networks 1}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=8cm]{NN2.png}
+    \caption{Neural Networks 2}
+    \label{fig:Neural Networks 2}
+\end{figure}
+[INSERT NN DIAGRAM/FIGURE with our features as input]
+
+Sin et al.\cite{Sin} proposed an ensemble of  neural networks model to predict the upward or downward trend using bitcoin market data of the 50 consecutive days. Each network module in the ensemble was a multi-layered perceptron three layers deep, taking a total of 190 features. They used the Lavenberg-Marquardt algorithm for training the MLPs. Genetic Algorithm based Selective Ensemble (GASEN) was employed to select the five best-performing perceptrons. They achieved an accuracy of 64\% in classifying whether an upward trend or downward trend is to be expected. Their model did not predict the price, rather just a green or red signal. Their work was limited to only one cryptocurrency, bitcoin.
+
+\begin{algorithm}[H]
+\caption{Training an Artificial Neural Network using gradient descent}
+\begin{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{Require:}}
+\REQUIRE X\textsubscript{train}, Market indicators and cryptocurrencies data. 
+\REQUIRE Y\textsubscript{train}, Next day prices(target).
+\REQUIRE $W^{i}$, $b^{i}$, $i\in\{1,...,l\}$.
+\REQUIRE Model architecture having l hidden layers.
+\REQUIRE learning rate($\alpha$).
+\\ \textit{Initialization:}
+\\   initialize all weight vectors W\textsuperscript{i} from a random distribution.
+\\ \textit{Training:}
+\\ \REPEAT
+
+\STATE h\textsuperscript{0} = X\textsubscript{train}
+    
+\FOR{$k = 1$ to $l$}
+\STATE z\textsuperscript{k} = b\textsuperscript{k} + W\textsuperscript{k}h\textsuperscript{k-1}
+\STATE h\textsuperscript{k} = activation function(z\textsuperscript{k})
+\ENDFOR
+    
+\STATE Loss Function(L) is calculated between h\textsuperscript{(l)} and Y\textsubscript{train}.
+    
+\FOR{$k = l$ to $1$}
+\STATE    Gradients($\frac{\partial L}{\partial W^{k}}$) of W\textsuperscript{k} is calculated with respect to L.
+\ENDFOR
+
+\FOR{$k = 1$ to $l$}
+\STATE W\textsuperscript{k} = W\textsuperscript{k} - $ \alpha\frac{\partial L}{\partial W^{k}}$
+\ENDFOR
+\UNTIL{convergence}
+    
+\end{algorithmic}
+\end{algorithm}
+
+Jang et al.\cite{Jang}, using Bayesian theory, explained Bitcoin’s high price volatility. They proposed a multi layer perceptron that maximizes the value of posterior, instead of maximizing likelihood like traditional neural architectures. Their model was trained using the rollover framework, wherein an old price time-step value is discarded for every new price. In this way, they dispose of long term dependencies that may be irrelevant for anticipating newer prices. Using the rollover strategy, means less computational cost while training as opposed to sequential recurrent architectures. They achieve a test Mean Absolute Percentage Error of 1\% in predicting log price of Bitcoin in the surge. [THEY DON'T USE SOCIAL DATA]
+
+\subsection{\textbf{Recurrent Neural Networks}}
+Forecasting prices of currencies is an inherently sequential task. To deal with time dependent data, a new class of neural networks were introduced termed as Recurrent Neural Networks. In this architecture, a directed graph along the sequence is formed to manage sequential data. Here the data at the previous time step is used to feed as inputs to predict the values at the next time step. Typical RNNs use previous values as well as some inputs at that time step to predict the values at each time step.
+\begin{equation}
+h_{t} = f(W_{hh}h_{t-1} + b_{h})
+\end{equation}
+\begin{equation}
+y_{t} = f(W_{yh}h_{t} + b_{y})
+\end{equation}
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=7cm]{rnn.png}
+    \caption{RNN}
+    \label{fig:RNN}
+\end{figure}
+
+\begin{table*}[h]
+\begin{tabularx}{\textwidth}{s|b|s|m|s|s}\hline
+\toprule
+\textbf{Author} &
+  \textbf{Brief Summary} &
+  \textbf{Methods} &
+  \textbf{Accuracy} &
+  \textbf{Cryptocurrencies} &
+  \textbf{Dataset} \\ \midrule
+Saad et al.\cite{Saad} &
+  The market of cryptocurrency was analyzed with the help of correlation analysis of various attributes and finally a machine learning model was built.& 
+  Multivariate Regression &
+  MAPE
+  BTC: 0.0162 and ETH: 0.0563. &
+  Bitcoin, Ethereum &
+  blockchain.info, etherscan.io \\ \midrule
+  
+Mittal et al.\cite{Mittal} &
+  Google Trends, Tweet Sentiment and Volume were used to predict the fluctuations in the Bitcoin prices and proposed that Wikipedia and Facebook Posts can also be included to improve the predictions. Tweet Sentiment showed the worst performance.&
+  Regression, RNN, LSTM &
+  Polynomial Regression
+  Volume: 77.01\% and Trends: 66.66\%.
+  RNN
+  Volume: 53.46\% and Trends: 62.45\%.
+  LSTM
+  Volume: 49.89\% and Trends: 50.00\%.
+  &
+  Bitcoin.
+  &
+  Coindesk, Twitter API, Google Trends \\ \midrule
+  
+Sin et al.\cite{Sin} &
+  It explained the dependecies of next day price on features of Bitcoin using Genetic Algorithm based Selective Neural Network Ensemble (GASEN) based on ANN.&
+  Ensemble of Neural Networks, MLP &
+  Trends: 64\%
+  &
+  Bitcoin.
+  &
+  blockchain.info, bitcoinity.org \\ \midrule
+  
+Jang et al.\cite{Jang} &
+Deployed a Bayesian Neural Network to capture non-linear influences of blockchain information and other macro-economic factors on price formation. Explained the price volatility in BTC and predicted the log price of BTC.&
+MLP &
+MAPE: 1\%
+&
+Bitcoin.
+&
+bitcoincharts.com, blockchain.info (empirical analysis) \\ \midrule
+  
+Smuts et al.\cite{Smuts} &
+  This paper tested the capability of trends and telegram data to predict the short-term trends in cryptocurrency price movements. &
+  LSTM &
+  Price
+  BTC: 63\% and ETH: 56\%
+  &
+  Bitcoin, Ethereum.
+  &
+  Google Trends, Telegram, Market data aggregator \\ \midrule
+  
+Laura et al.\cite{Alessandretti} &
+  Two ensemble models of regression trees created using XGBoost algorithm and RNNs. For temporal dependencies LSTM was also used and ROI was calculated. &
+  Ensemble of regression trees(using XGBoost), RNN, LSTM &
+  .....\%
+  &
+  Bitcoin, , Ethereum, Ripple
+&
+coinmarketcap.com \\  \bottomrule
+\end{tabularx}
+\caption{\label{tab:Table 1}Comparison Table}
+\end{table*}
+
+\subsection{\textbf{Long Short Term Memory}}
+Recurrent Neural Networks are unable to capture long term dependencies after some amount of sequence length and thus again a new powerful architecture was proposed by Hochreiter et al.\cite{Sepp} known as Long Short Term Memory(LSTM). In this network a new memory cell state is added along with gating functionality that controls what information is to be discarded and what new information is to be added to provide long term dependencies. Here the cell states are passed across the network and accordingly they are updated and modified as per the importance of the previous cell state data which is being carried since it became important for the future. Gates are used to modify the cell state as well as process inputs and produce output.
+\begin{equation}
+f_{t} = \sigma(W_{f}.[h_{t-1},x_{t}] + b_{f})    
+\end{equation}
+\begin{equation}
+i_{t} = \sigma(W_{i}.[h_{t-1},x_{t}] + b_{i})    
+\end{equation}
+\begin{equation}
+C^*_{t} = tanh(W_{c}.[h_{t-1},x_{t}] + b_{c})    
+\end{equation}
+\begin{equation}
+C_{t} = f_{t}*C_{t-1} + i_{t}*C^*_{t}    
+\end{equation}
+\begin{equation}
+o_{t} = \sigma(W_{o}.[h_{t-1},x_{t}] + b_{o})    
+\end{equation}
+\begin{equation}
+h_{t} = o_{t}*tanh(C_{t})
+\end{equation}
+
+In the above equations the $f$ gate, by observing the previous activations (h) and current input data (x) outputs a value between 0 and 1 for each previous cell states, where 1 represents to keep this information completely while the 0 states that discard the information completely. The $i$ gate present above conveys that how much is the current information about the data relevant in the future. The candidate for the cell update is the $C^*$ gate. Then along with the $f$, $i$ and $C^*$ gate, a suitable update is performed to the cell states which are passed throughout the network to capture long term dependencies. Then based on our cell state, o gate captures what part of the cell state is going to be the output. This output is combined with the current cell state activated by the tanh layer to give the activation for the current cell.
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=7cm]{lstm.png}
+    \caption{LSTM}
+    \label{fig:LSTM}
+\end{figure}
+
+Mittal et al.\cite{Mittal} proposed a RNN and LSTM model that utilizes google trends and tweet volume along with market factors to anticipate the price of bitcoin. They showed that sequential models outperformed ARIMA (Autoregressive integrated moving average), the standard model to analyze time series data in traditional statistics and econometrics. The RNN model achieves an accuracy of 62.45\% and 53.46\% on trends and volume respectively. On the other hand, their LSTM model achieves an accuracy of 50\% and 49.89\% on trends and volume respectively. Smuts\cite{Smuts} used VADER [add citation], a sentiment analysis python library for social media text, to correlate telegram sentiment and the price of Bitcoin and Ethereum and predict price of the currencies using an LSTM. They achieved an accuracy of 63\% on Bitcoin data and 56\% on Ethereum data.
+
+\subsection{\textbf{Other methods}}
+Apart from the previously introduced methods, regression trees, decision trees, support vector regression and other algorithms have been used. Laura et al.\cite{Alessandretti} designed two models, an ensemble of regression trees and a recurrent neural net. Two versions of the ensemble of regression trees were considered, the first was a single model to describe the price change for all currencies combined. The second method was to construct individual models for each currency. The regression tree models were built using the XGBoost algorithm. To exploit temporal dependencies, a Long Short Term Memory (LSTM) was selected as their second model. They evaluate the models by calculating the return on investment (ROI) and comparing the performance against a simple moving average. [ADD RESULTS].
+\begin{equation}
+ROI(c,t_{i}) = \frac{price(c,t_{i}) - price(c,t_{i-1})}{price(c,t_{i-1})}    
+\end{equation}
+
+
+
+\section{Background and Preliminaries}
+
+\subsection{The problem of erratic fluctuations}
+The value of market assets is determined by various factors that include supply and demand, the performance of the economy,  growth rate,  inflation, political factors, and human psychology.  With all of these factors continuously changing, the aggregation of these factors generates erratic and irregular fluctuations in the prices of market assets. Cryptocurrencies, like other market assets, are prone to the problem of random-like fluctuations in their prices. The financial market is not inherently stochastic, however, it is sufficiently complex to be incomprehensible to us and our systems. And thus, designing a deterministic model that takes into consideration, all the socio-economic factors is out of option. In this section, we will describe how to model market assets non-deterministically.
+
+\subsection{Stochastic processes}
+All processes in nature can be classified as deterministic given all the information pertaining to them. However, most natural systems are too complicated to be modeled given limited information about them. Thus, stochastic processes come into the picture, wherein partial information of the system can be used to determine a possible outcome over the set of all possibilities in the probability space. Stochastic processes are sets of random variables that evolve over time in an arbitrary manner. Most natural systems can be considered as stochastic processes from our perspective. Examples of stochastic processes include the weather system, audio-video signals, and the financial market.
+
+The value of a market asset, like a cryptocurrency, is determined by intricate factors that are continuously evolving in a near-random direction at a seemingly random pace. At the core, collective human behavior determines the supply and demand of an asset which in turn determines the current value of the said asset. Modeling, human behavior is an impossible task, and thus we consider the value of an asset to stochastically determined. Defining the behavior of the market as an erratic process gives us the advantage of using the well-defined mathematical field of stochasticity.
+
+Before we introduce stochasticity into the market scene, we present the types of stochastic processes and how we can relate them to the cryptocurrency market. The most rudimentary stochastic process is the Bernoulli process, where random variables hold binary value and the sequence produced by it is Identically and Independently Distributed (IID). The IID property, which states that the system of random variables is drawn from the same probability distribution and all the random variables are mutually independent, is at the essence of market stochastics. Building on that, random walk is a stochastic process that sums up IID random variables and thus has the property of evolution in time. Burton Malkiel\cite{bgmalki}, proposed that market assets follow a random walk. 
+
+A random walk is defined as the path formed by a sequence of random IID steps, given the starting point.
+\begin{equation}
+y_{t} = y_{0} + \sum_{i=1}^{t} \xi_{i}
+\end{equation}
+where~$\xi_{i}$ is an IID at time step~$i$ and~$y_{0}$ is the starting point of the process.
+
+Alternatively, we can obtain a path uncovered by a random walk as a bootstrapping process, taking into account the most recent state of the system.
+Consider the second last state of a system~$y_{t-1}$,
+\begin{equation}
+y_{t-1} = y_{0} + \sum_{i=1}^{t-1} \xi_{i}
+\end{equation}
+Moving one step forward as defined by the process, we obtain the next state of system as shown below.
+\begin{equation}
+y_{t-1} + \xi_{t} = y_{0} + \sum_{i=1}^{t-1} \xi_{i} + \xi_{t}
+\end{equation}
+\begin{equation}
+y_{t-1} + \xi_{t} = y_{t} 
+\end{equation}
+The above equation is more convenient to use as it is more computationally efficient when t is extremely large. Hence, this notion is used in the implementation of our proposed approach.
+
+Bringing this into context with the value of a market asset, like a cryptocurrency, the value can be thought of as being produced by a random walk, where~$\xi_{t}$ can be considered as an aggregation of all market factors that may have possibly affected the value of the asset. However, this approach does not take into consideration information regarding essential market factors. We try to address this issue by introducing neural networks to take into account important market statistics and social sentiment.
+
+\section{Proposed Approach}
+\subsection{\textbf{Stochasticity in neural networks}}
+According to the efficient market hypothesis by Malkiel\cite{Malkiel}, all the past information regarding the market asset is reflected in the current value of the asset and the market will instantly acknowledge new information and react to it accordingly. Therefore, all effort to predict prices by analyzing information is futile. However, we can observe how the market reacts to information and develop a pattern that exhibits the behavior of the market when new information is widely available. This pattern has to be stochastic so as to accommodate the multiplicity of all possible outcomes to the arrival of new knowledge. 
+
+Before we introduce stochasticity into the picture, we need a way to distill market features and describe the inter-dependencies between market statistics and social sentiment. To do this, we use a neural network because a neural network is a universal function approximator that tries to map dependencies between variables. The final value of a market asset is determined by a hierarchy of features that roots from factors like supply and demand, economy and human behavior and a neural network is an excellent candidate to do just this.
+
+There are two ways to inculcate randomness in a neural network, the first is to randomly change the weights by a small degree and the second way is by adding randomness to the activations at runtime. The first approach is not ideal because it would mean that feature detection will get noisy as the network evolves and may eventually forget dependencies. Intuitively, the second approach seems fitting because the randomness in activations can be interpreted as random changes in features, which in turn can be thought of as replicating the erratic behaviors of the market.
+
+We propose a generalized formulation of the stochastic behavior of a layer in a deep neural network as follows,
+\begin{equation}
+s_{t} = h_{t} + \gamma\xi_{t}\times reaction(h_{t},s_{t-1}), 0 < \gamma < 1
+\end{equation}
+where~$h_{i}$ is the activation values of the~$i^{th}$ time step. We define~$\gamma$ as perturbation factor that controls the amount of stochasticity. ~$\xi$ is an operator that produces vector of random variables of the same dimensions as the activation. ~$reaction$ is a general function that determines how the current activations will react with respect to the activations of the previous time step. Finally, ~$s_{i}$ is the vector of values of the post-stochastic operation.
+
+Let us break down each of the terms in the generalized equation of stochasticity in the layers of the neural network. ~$\gamma$ is the perturbation factor that determines the amount of randomness to be infused in the activations.~$reaction$ is a function that determines the direction to move based on the current activation values and the previous post-stochastic operation values. If we define~$\xi$ to be an operator that produces a vector of IIDs as a probability, i.e ~$0 < X < 1, \forall X \in \xi$, then we can interpret each neuron as having its own probability of absorbing randomness.
+
+%A very natural choice in selecting
+In determining the reaction function, we only include two parameters that are $h_{t}$ and $s_{t-1}$. This choice is more suitable and intuitive due to the Markov property exhibited by the financial markets. This implies that given the prior stochastic-activation $s_{t-1}$, the current stochastic-activation $s_{t}$ is independent of the other past activations. Thus we model the ~$reaction$ function as the difference between current activations and previous activations, showing the direction in which to move.
+\begin{equation}
+reaction(h_{t},s_{t-1}) = h_{t} - s_{t-1}
+\end{equation}
+Therefore from (15) and (16),
+\begin{equation}
+s_{t} = h_{t} + \gamma \xi_{t} (h_{t}-s_{t-1})
+\end{equation}
+This equation can be thought of as a random-like walk that takes into account the pattern of reaction of the market in progressive time steps.
+
+In a continuously evolving market, it is of utmost importance that our direction of movement corresponds to the pattern that has been observed in the recent time steps as opposed to initial time steps. The pattern should be adapting to changes in market reaction. Here, we show how our formulation gives priority to recent activations over older activations.
+Equation (17) for a system at time step 3 can be written as,
+\begin{equation}
+s_{t} = (1 + \gamma  \xi_{t})h_{t} - \gamma\xi_{t}(s_{t-1})
+\end{equation}
+\begin{equation}
+s_{t} = (1 + \gamma \xi_{t})h_{t} - \gamma\xi_{t}((1 + \gamma\xi_{t-1})h_{t-1} - \gamma\xi_{t-1}(s_{t-2}))
+\end{equation}
+\begin{equation}
+s_{t} = (1 + \gamma\xi_{t}) h_{t} - \gamma\xi_{t}(1 + \gamma\xi_{t-1})h_{t-1} + \gamma^2\xi_{t}\xi_{t-1}(s_{t-2})
+\end{equation}
+This will last till t = 0 where s = 0, h = 0.
+Thus, a general form of the equation will be as follows,
+\begin{equation}
+s_{t} = (1 + \gamma\xi_{t})h_{t} + \nsum_{i=1}^{t-1}(-\gamma)^{t-i}(1 + \gamma\xi_{i})h_{i}\prod_{j=i+1}^{t}\xi_{j}
+\end{equation}
+The above equation states that the first term is given more attention than the second term. We observe that previous activations have exponentially decaying significance because $0 < \gamma,\xi < 1$. Thus, the recent activations have higher priority as compared to the previous ones in determining the direction of the stochastic walk.
+% We know that, ~$0 < \gamma  \xi < 1$, therefore, we observe an exponentially decaying importance of activations. Thus, we show that recent activations are given a higher priority than older activations, in determining the direction of the stochastic walk. [I(Vasu) will finish this up till night along with markov chain.]
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=14cm]{system.png}
+    \caption{System Model}
+    \label{fig:System Model}
+\end{figure*}
+\subsection{\textbf{Stochastic Multi-Layer Perceptron}}
+We trained a model that consists of 6 layers, each with the same activation function i.e. ReLU. The layers contain 130, 100, 50, 25, 10, 1 neurons hierarchically from the input to the output direction. The input consists of 23 features over 7 days, flattened to form a vector of length 161. We trained two model variations, with the difference in choice of normalization of data. The first model had all the data points normalized by the feature mean. The second model has all features but one, the price, normalized.
+
+\begin{algorithm}[H]
+ \caption{Testing the stochastic MLP}
+ \begin{algorithmic}
+ \renewcommand{\algorithmicrequire}{\textbf{Require:}}
+\REQUIRE X\textsubscript{test}, Market indicators and cryptocurrencies data.
+\REQUIRE $W^{i}$, $b^{i}$, $i\in\{1,...,l\}$.
+\REQUIRE Model architecture having l hidden layers.
+\REQUIRE learning rate($\alpha$).
+
+\textbf{Forward Propagation:}
+\STATE h\textsuperscript{0} = X\textsubscript{test}
+\FOR{$k = 1$ to $l$}
+\STATE z\textsuperscript{k} = b\textsuperscript{k} + W\textsuperscript{k}h\textsuperscript{k-1}
+\STATE r $\gets$ Randomly distributed vector of shape z
+\STATE z\textsuperscript{k} = z\textsuperscript{k} + (z\textsuperscript{k} - z\textsuperscript{k-1})$\odot$r$\times$0.1 
+\STATE h\textsuperscript{k} = ReLU(z\textsuperscript{k})
+\ENDFOR
+
+\end{algorithmic}
+\end{algorithm}
+ 
+\subsection{\textbf{LSTM}}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=7cm]{slstm.png}
+    \caption{LSTM model}
+    \label{fig:SLSTM Model}
+\end{figure}
+This model consists of a single LSTM layer. The output of the LSTM layer is fed into a small MLP containing of 20, 15, 7, 1 neurons in each layer respectively to give the final output of the next day price. It was also trained using two methods as the above one viz. normalized and unormalized ones.
+
+\section{Experimentation}
+\subsection{\textbf{Data Preprocessing}}
+Price of cryptocurrencies is not decided by some single power like central bank of the country and neither it depends upon the gold reserve kept against for the inflation. But the price is decided by none but the whole community of the end users and miners where no one knows the other members of the their coterie.
+
+On the genesis of whole new market of these new currencies, it was easier to mine a single block of the blockchain and along with that, the reward gained by the miners were higher. But mining difficulty increases day by day the new miners were added and reward to the them were decreased exponentially. Mining, after a time being becomes infeasible against the cost of purchasing custom hardware and power it consumes. 
+Therefore, price of cryptocurrencies doesn't depend on the single factor like number of transactions per day or volume of coins present in the market but on complex factors like mining difficulty and hash rate and even more complex factors like ideology of people in investing in the cryptocurrencies. Basic earning of coins of any cryptocurrency is mining it, and mining requires some special hardware if not mined over GPU. In the beginning of 2018, prices of coins were bubbling up, and so does the price of GPU's. The better the GPU, the more hashes it will hit to mine a block. That turn out to be a mini-max game of optimization between hashrate and power consumption. So, we considered the mining difficulty and hashrate of coin and how much profitable is it to mine it.
+
+We took utmost care in choosing factors that may affect the price. Some factors that seemed redundant were either removed or removed in the later stage when the trained model was examined. We found out that there was a spike in price of coin the moment people started tweeting more about it. Intuitively it can be evaluated that people tend to perform more transactions when tweet volume increases. These are not only correlations but also includes causation with feedback loop. That correlation does not end with tweet volume. People tend to google more of the trending topics to remain updated about it. Spike in Google search also seemed to have association with the price of the coins, which too is trivial result. Thus in our dataset, we included how many tweets are being tweeted in a day along with the number of Google search queries performed regarding the cryptocurrency in a particular day.
+
+Cryptocurrencies didn't took off before 2017 and their price remained almost constant throughout. People remained unaware of its potential till then. Not much of the transactions happened back then and so, the data before that was found to be futile for the prediction purpose. We trained the model on the data ranging from mid of 2017 to the end of 2019. Total of 850 data points were enough to let our model extract patterns from the data.
+
+Cryptocurrency possess decentralized model of banking. No single entity or institution holds absolute power over it. Transaction made by one party to another party is to be confirmed by all the others and must be logged in the table of blocks. Logging the transaction requires time to confirm the transaction made known as confirmation time (usually around 10 minutes). That time depends upon the currently active users and their geographical location to update their block table. Therefore, we consider the transaction time need for confirmation as one of our feature for predicting price of the cryptocoin.
+
+To give rest to the people from continuously trading their assets, share market have the model of opening at certain time and closing at certain. Beyond that, no one can trade their shares. But the market for trading cryptocurrencies remains open for everyday. Cryptocurrency unlike share market is not listed in any stock exchange of a country or similar. Here, there is no opening time or closing time because there is no regulatory body having power over it. But we can surely calculate the amount and units of some cryptocurrency traded in a day. We considered the volume of the coin traded in a single day as one of our feature. Along with that, we also considered the peak and the lowest value of the coin attained in a day. Minima and maxima in a day correlates with the involvement of people in trading coins.
+
+A total of 23 features were used in this model with the window side of 7. For ages and ages, we lived in a civilization working on the 7 day model. It can be intuitively interpreted to be recurring pattern in the model over the 7 day period. We trained the model with the previous data of past 7 days/1 week to predict the price of the next day. We trained 2 types of models mentioned below.
+
+\subsection{\textbf{Evaluation Metrics}}
+The trained models are evaluated on the basis of the following different performance metrics. The MAPE (Mean Absolute Percentage Error), MAE (Mean Absolute Error), RMS (Root Mean Squared Error), and MSE (Mean Squared Error) are used to asses our models. The formulas for the same are presented below.
+
+\begin{equation}
+MAPE = \frac{1}{n}\sum_{n=1}^{n} \frac{|A_{t} - F_{t}|}{|A_{t}|}\times100    
+\end{equation}
+\begin{equation}
+MAE = \frac{1}{n}\sum_{n=1}^{n} \frac{|A_{t} - F_{t}|}{|A_{t}|}    
+\end{equation}
+\begin{equation}
+RMS = \sqrt{\frac{1}{n}\sum_{n=1}^{n} \left( \frac{A_{t} - F_{t}}{A_{t}}\right)^2}    
+\end{equation}
+\begin{equation}
+MSE = \frac{1}{n}\sum_{n=1}^{n} (A_{t} - F_{t})^2
+\end{equation}
+
+\subsection{\textbf{Results}}
+Two prediction model classes were trained viz. Multi-layer perceptron and long short term memory (LSTM) were trained on 3 market-dominating cryptocurrencies i.e. Bitcoin, Ethereum, and Litecoin. We trained two model variations for each currency-architecture pair, with the difference in the choice of normalization of data. The first variation has all data features normalized by the feature mean of the train data. The second variation has all features but one, the price normalized. The intuition behind using leaving the price unnormalized is that we wanted the models to obtain the magnitude of the price of the currency directly from data instead of obtaining it from the model.
+
+\subsubsection{\textbf{Deterministic Models}}
+In this section, we present the results obtained by our deterministic models on train and test data.
+
+\begin{table}[!htbp]
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Model} & \textbf{Currency} & \textbf{MAPE} & \textbf{MAE} & \textbf{RMSE} & \textbf{MSE} \\ \hline
+\multirow{3}{*}{\textbf{MLP}}  & \textbf{BTC} & 4.05496 & 0.04055 & 0.05307 & 149454.95002 \\ 
+& \textbf{ETH} & 4.52162 & 0.04522 & 0.06010 & 750.41166    \\ 
+& \textbf{LTC} & 4.82956 & 0.04830 & 0.06534 & 36.89689     \\ \hline
+\multirow{3}{*}{\textbf{LSTM}} & \textbf{BTC} & 3.34076 & 0.03341 & 0.04477 & 122179.94284 \\ 
+& \textbf{ETH} & 4.57214 & 0.04572 & 0.06105 & 759.24597    \\ 
+& \textbf{LTC} & 4.53868 & 0.04539 & 0.06205 & 40.66641     \\ \bottomrule
+\end{tabular}
+\caption{\label{Table 2:}Norm Train}
+\end{table}
+
+\begin{table}[!htbp]
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Model} & \textbf{Currency} & \textbf{MAPE} & \textbf{MAE} & \textbf{RMSE} & \textbf{MSE} \\ \hline
+\multirow{3}{*}{\textbf{MLP}}  & \textbf{BTC} & 4.04184 & 0.04042 & 0.05652 & 269811.44549 \\
+& \textbf{ETH} & 4.12320 & 0.04123 & 0.05548 & 931.50266    \\ 
+& \textbf{LTC} & 4.20070 & 0.04201 & 0.05960 & 60.90442     \\ \hline
+\multirow{3}{*}{\textbf{LSTM}} & \textbf{BTC} & 5.67114 & 0.05671 & 0.08116 & 484755.96467 \\
+& \textbf{ETH} & 5.14520 & 0.05145 & 0.06610 & 1418.24572   \\
+& \textbf{LTC} & 4.91972 & 0.04920 & 0.07053 & 146.38440    \\ \bottomrule
+\end{tabular}
+\caption{\label{Table 3:}UNorm Train}
+\end{table}
+
+\begin{table}[!htbp]
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Model} & \textbf{Currency} & \textbf{MAPE} & \textbf{MAE} & \textbf{RMSE} & \textbf{MSE} \\ \hline
+\multirow{3}{*}{\textbf{MLP}}  & \textbf{BTC} & 4.01775 & 0.04018 & 0.06921 & 491529.85259 \\ 
+& \textbf{ETH} & 3.20772 & 0.03208 & 0.04699 & 105.55482    \\ 
+& \textbf{LTC} & 3.83638 & 0.03836 & 0.05707 & 20.53836     \\ \hline
+\multirow{3}{*}{\textbf{LSTM}} & \textbf{BTC} & 4.48590 & 0.04486 & 0.06083 & 334129.49767 \\ 
+& \textbf{ETH} & 4.01214 & 0.04012 & 0.05569 & 148.65727    \\ 
+& \textbf{LTC} & 3.85545 & 0.03855 & 0.05468 & 16.00822     \\ \bottomrule
+\end{tabular}
+\caption{\label{Table 4:}Norm Test}
+\end{table}
+
+
+\begin{table}[!htbp]
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Model} & \textbf{Currency} & \textbf{MAPE} & \textbf{MAE} & \textbf{RMSE} & \textbf{MSE} \\ \hline
+\multirow{3}{*}{\textbf{MLP}}  & \textbf{BTC} & 3.06223 & 0.03062 & 0.04438 & 185950.34664 \\ 
+& \textbf{ETH} & 2.70989 & 0.02710 & 0.03900 & 64.20306     \\
+& \textbf{LTC} & 2.67675 & 0.02677 & 0.04097 & 12.21042     \\ \hline
+\multirow{3}{*}{\textbf{LSTM}} & \textbf{BTC} & 3.20205 & 0.03202 & 0.04406 & 219261.77088 \\
+& \textbf{ETH} & 3.48131 & 0.03481 & 0.04849 & 119.59205    \\
+& \textbf{LTC} & 2.76838 & 0.02768 & 0.04068 & 11.09798     \\ \bottomrule
+\end{tabular}
+\caption{\label{Table 5:}UNorm Test}
+\end{table}
+
+\subsubsection{\textbf{Stochastic Models}}
+In this section, the results obtained by our models on test data using stochastic layers in the neural networks are presented. The parameters of the trained model remain the same as in the deterministic models. However, here we test the models using non-zero perturbation factors thus inducing stochasticity in the models. We demonstrate the probability distribution of Mean Absolute Percentage Error (MAPE) of predicted prices by stochastic neural networks over 100 runs. Two perturbation factor values are tested for each trained model.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/MBU.png}
+    \caption{MBU}
+    \label{fig:Plot}
+\end{figure}
+The deterministic MLP model for the Unorm Bitcoin dataset has a mean absolute percentage error of 3.062 \%. Using perturbation factor,~$\gamma = 0.1$ an average MAPE of 2.8601\% is observed for the stochastic model over 100 evaluations. Thus, there is 6.601 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 2.820 \% is observed. Thus, there is 7.887 \% relative improvement in comparison with the deterministic model’s performance. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/MBN.png}
+    \caption{MBN}
+    \label{fig:Plot}
+\end{figure}
+The deterministic MLP model for the Norm Bitcoin dataset has a mean absolute percentage error of 4.0177 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 4.0178 \% is observed for the stochastic model over 100 evaluations. Similarly,  using~$\gamma = 0.012$ an average MAPE of 4.0192 \% is observed. Here, no improvement is observed by adding stochasticity. In this example, we show how a small change in~$\gamma$ may give a completely different distribution of predicted price. And thus, an essential part of designing a stochastic neural net is deciding the amount of stochasticity. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/MEU.png}
+    \caption{MEU}
+    \label{fig:Plot}
+\end{figure}
+The deterministic MLP model for the Unorm Ethereum dataset has a mean absolute percentage error of 2.7099 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 2.5517 \% is observed for the stochastic model over 100 evaluations. Thus, there is 5.8358 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 2.5204 \% is observed. Thus, there is 6.9920 \% relative improvement in comparison with the deterministic model’s performance.   
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/MEN.png}
+    \caption{MEN}
+    \label{fig:Plot}
+\end{figure}
+The deterministic MLP model for the Norm Ethereum dataset has a mean absolute percentage error of 3.2077 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 3.1735 \% is observed for the stochastic model over 100 evaluations. Thus, there is 1.0672 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 3.1812 \% is observed. Thus, there is 0.8276 \% relative improvement in comparison with the deterministic model’s performance.  
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/MLU.png}
+    \caption{MLU}
+    \label{fig:Plot}
+\end{figure}
+The deterministic MLP model for the Unorm Litecoin dataset has a mean absolute percentage error of 2.6767 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 2.4768 \% is observed for the stochastic model over 100 evaluations. Thus, there is 7.4696 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 2.4377 \% is observed. Thus, there is 8.9290 \% relative improvement in comparison with the deterministic model’s performance.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/MLN.png}
+    \caption{MLN}
+    \label{fig:Plot}
+\end{figure}
+The deterministic MLP model for the Norm Litecoin dataset has a mean absolute percentage error of 3.8364 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 3.7488 \% is observed for the stochastic model over 100 evaluations. Thus, there is 2.2821 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 3.7397 \% is observed. Thus, there is 2.5190  \% relative improvement in comparison with the deterministic model’s performance.   
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/LBU.png}
+    \caption{LBU}
+    \label{fig:Plot}
+\end{figure}
+The deterministic LSTM model for the Unorm Bitcoin dataset has a mean absolute percentage error of 3.2021 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 3.1919 \% is observed for the stochastic model over 100 evaluations. Thus, there is 0.3168 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 3.1950 \% is observed. Thus, there is 0.2201  \% relative improvement in comparison with the deterministic model’s performance.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/LBN.png}
+    \caption{LBN}
+    \label{fig:Plot}
+\end{figure}
+The deterministic LSTM model for the Norm Bitcoin dataset has a mean absolute percentage error of 4.4859 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 4.3810 \% is observed for the stochastic model over 100 evaluations. Thus, there is 2.3379 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 4.3632 \% is observed. Thus, there is 2.7343  \% relative improvement in comparison with the deterministic model’s performance. 
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/LEU.png}
+    \caption{LEU}
+    \label{fig:Plot}
+\end{figure}
+The deterministic LSTM model for the Unorm Ethereum dataset has a mean absolute percentage error of 3.4813 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 3.4642 \% is observed for the stochastic model over 100 evaluations. Thus, there is 0.4905 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 3.4690 \% is observed. Thus, there is 0.3544  \% relative improvement in comparison with the deterministic model’s performance.  
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/LEN.png}
+    \caption{LEN}
+    \label{fig:Plot}
+\end{figure}
+The deterministic LSTM model for the Norm Ethereum dataset has a mean absolute percentage error of 4.0121 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 3.9614 \% is observed for the stochastic model over 100 evaluations. Thus, there is 1.2646 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 3.9532 \% is observed. Thus, there is 1.4693  \% relative improvement in comparison with the deterministic model’s performance. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/LLU.png}
+    \caption{LLU}
+    \label{fig:Plot}
+\end{figure}
+The deterministic LSTM model for the Unorm Litecoin dataset has a mean absolute percentage error of 2.7684 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 2.6921 \% is observed for the stochastic model over 100 evaluations. Thus, there is 2.7554 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 2.6928 \% is observed. Thus, there is 2.7308  \% relative improvement in comparison with the deterministic model’s performance.   
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{Distributions/LLN.png}
+    \caption{LLN}
+    \label{fig:Plot}
+\end{figure}
+The deterministic LSTM model for the Norm Litecoin dataset has a mean absolute percentage error of 3.8554 \%. Using perturbation factor~$\gamma = 0.1$ an average MAPE of 3.7628 \% is observed for the stochastic model over 100 evaluations. Thus, there is 2.4025 \% relative improvement in comparison with the deterministic model’s performance. Similarly,  using~$\gamma = 0.12$ an average MAPE of 3.7454 \% is observed. Thus, there is 2.8542  \% relative improvement in comparison with the deterministic model’s performance.
+
+
+
+
+\clearpage
+\printbibliography
+\end{document}

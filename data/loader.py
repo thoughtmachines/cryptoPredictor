@@ -5,7 +5,7 @@ import torch
 
 class cryptoData(object):
 
-    def __init__(self,currency,test = False,DEVICE = torch.device("cpu"),window=7):
+    def __init__(self,currency,test = False,DEVICE = torch.device("cpu"),window=7,model=None):
         data = pd.read_csv("data/data/"+currency+"Final.csv")
         window = 7
         data = data.drop(["Unnamed: 0",
@@ -51,7 +51,11 @@ class cryptoData(object):
 
         self.xtrain = torch.Tensor(np.asarray(xtrain)).to(DEVICE)
         self.ytrain = torch.Tensor(np.asarray(ytrain)).to(DEVICE)
-        self.pmax = torch.Tensor([1])
+
+        if model == None or model== "norm":
+            self.pmax = torch.mean(self.ytrain)
+        elif model == "unorm":
+            self.pmax = torch.Tensor([1])
 
         xtest = []
         ytest = []

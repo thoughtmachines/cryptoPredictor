@@ -8,12 +8,15 @@ from torch.optim import Adam
 from torch.nn.init import xavier_normal as xavier
 import  matplotlib.pyplot as plt
 
-from data.unorm_loader import cryptoData
+from data.loader import cryptoData
 from models.model import  MLPRegressor
 
 DEVICE = torch.device("cpu")
 MODE = "test"
-# MODE = "test"
+COIN = "btc"
+MODEL = "unorm"
+STOCHASTIC = True
+
 
 if __name__ == "__main__":
 
@@ -23,17 +26,11 @@ if __name__ == "__main__":
     else:
         test = True
 
-    model = MLPRegressor(stochastic=True)
-    model.load_state_dict(torch.load("weights/_unorm_ltc_mlp.pth"))
-    
-
-    dataloader = cryptoData("ltc",test=test,DEVICE=DEVICE)
-
+    model = MLPRegressor(coin=COIN,model=MODEL,stochastic=STOCHASTIC)
     model.to(DEVICE)
 
+    dataloader = cryptoData(COIN,test=test,DEVICE=DEVICE,model=MODEL)
     breaker = len(dataloader)
-
-    
 
     for j in range(100):
         model.eval(dataloader[0][0])

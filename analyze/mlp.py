@@ -8,12 +8,14 @@ from torch.optim import Adam
 from torch.nn.init import xavier_normal as xavier
 import  matplotlib.pyplot as plt
 
-from data.norm_loader import cryptoData
+from data.loader import cryptoData
 from models.model import  MLPRegressor
 
 DEVICE = torch.device("cpu")
 MODE = "test"
-# MODE = "test"
+COIN = "btc"
+MODEL = "unorm"
+STOCHASTIC = False
 
 if __name__ == "__main__":
 
@@ -23,14 +25,10 @@ if __name__ == "__main__":
     else:
         test = True
 
-    model = MLPRegressor()
-    model.load_state_dict(torch.load("weights/_norm_btc_mlp (2).pth"))
-    
-
-    dataloader = cryptoData("btc",test=test,DEVICE=DEVICE)
-
+    model = MLPRegressor(coin=COIN,model=MODEL,stochastic=STOCHASTIC)
     model.to(DEVICE)
 
+    dataloader = cryptoData(COIN,test=test,DEVICE=DEVICE,model=MODEL)
     breaker = len(dataloader)
 
     model.eval(dataloader[0][0])
@@ -53,18 +51,19 @@ if __name__ == "__main__":
         m+= abs((t[-1] - h[-1]))**2
         r+= abs((t[-1] - h[-1])/t[-1])**2
 
-    # plt.plot(t)
-    # plt.plot(h)
-    # plt.show()
 
-    # print("MAPE",z/breaker * 100)
-    # print("MAE",z/breaker)
-    # print("RMSE",(r/breaker)**0.5)
-    # print("MSE",m/breaker)
+    plt.plot(t)
+    plt.plot(h)
+    plt.show()
+
+    print("MAPE",z/breaker * 100)
+    print("MAE",z/breaker)
+    print("RMSE",(r/breaker)**0.5)
+    print("MSE",m/breaker)
     
-    print(z/breaker * 100)
-    print(z/breaker)
-    print((r/breaker)**0.5)
-    print(m/breaker)
+    # print(z/breaker * 100)
+    # print(z/breaker)
+    # print((r/breaker)**0.5)
+    # print(m/breaker)
 
         

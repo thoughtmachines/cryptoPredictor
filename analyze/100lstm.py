@@ -8,16 +8,18 @@ from torch.optim import Adam
 from torch.nn.init import xavier_normal as xavier
 import  matplotlib.pyplot as plt
 
-from data.norm_loader import cryptoData
+from data.loader import cryptoData
 from models.model import  SeqRegressor
 
-DEVICE = torch.device("cpu"),
+DEVICE = torch.device("cpu")
 MODE = "test"
-# MODE = "test"
+COIN = "btc"
+MODEL = "unorm"
+STOCHASTIC = True
 
 if __name__ == "__main__":
 
-    model = SeqRegressor(stochastic=True)
+    model = SeqRegressor(stochastic=STOCHASTIC,model=MODEL,coin=COIN)
 
     if MODE == "train":
         test = False
@@ -26,11 +28,8 @@ if __name__ == "__main__":
         test = True
 
     
-    dataloader = cryptoData("ltc",test=test,DEVICE=DEVICE)
-    model.load_state_dict(torch.load("weights/mape_norm_ltc_lstm.pth"))
+    dataloader = cryptoData(currency=COIN,test=test,DEVICE=DEVICE,model=MODEL)
     model.to(DEVICE)
-
-    
     breaker = len(dataloader)
 
     for j in range(100):
