@@ -14,7 +14,7 @@ from models.model import  MLPRegressor
 DEVICE = torch.device("cpu")
 MODE = "test"
 COIN = "btc"
-MODEL = "unorm"
+MODEL = "norm"
 STOCHASTIC = True
 
 

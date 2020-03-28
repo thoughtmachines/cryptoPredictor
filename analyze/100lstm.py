@@ -13,7 +13,7 @@ from models.model import  SeqRegressor
 
 DEVICE = torch.device("cpu")
 MODE = "test"
-COIN = "btc"
+COIN = "eth"
 MODEL = "unorm"
 STOCHASTIC = True
 

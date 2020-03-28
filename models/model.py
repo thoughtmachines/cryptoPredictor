@@ -15,7 +15,7 @@ class SeqRegressor(nn.Module):
         self.layer2 = nn.Linear(20,15)
         self.layer3 = nn.Linear(15,7)
         self.layer4 = nn.Linear(7,1)
-        self.relu = nn.ReLU()
+        self.relu = nn.ReLU(inplace=False)
 
         hidden_state = torch.ones(1,1, hidden_size)
         cell_state = torch.ones(1,1, hidden_size)
@@ -25,7 +25,8 @@ class SeqRegressor(nn.Module):
             name = "weights/mape_"+model+"_"+coin+"_lstm.pth"
             self.load_state_dict(torch.load(name))
         
-        self.SM = stochastic_module(_type="mlp",coin=coin,model=model)
+        self.SM = stochastic_module(_type="lstm",coin=coin,model=model)
+        self.sigmoid = nn.Sigmoid()
 
 
     def eval(self,x):
@@ -54,27 +55,27 @@ class SeqRegressor(nn.Module):
         """
         
         out,_ = self.lstm(x,self.hidden)
-        
+        out = out.detach()
         x = out[:,-1,:][-1]
         x = self.relu(x)
         if self.stochastic:
-            x+= (x- self.memory[0])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[0])
-            self.memory[0] = x.clone()
+            x= x+ (x- self.memory[0]).detach()* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[0])
+            self.memory[0] = x.clone().detach()
 
         x = self.relu(self.layer1(x))
         if self.stochastic:
-            x+= (x- self.memory[1])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[1])
-            self.memory[1] = x.clone()
+            x= x+ (x- self.memory[1]).detach()* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[1])
+            self.memory[1] = x.clone().detach()
 
         x = self.relu(self.layer2(x))
         if self.stochastic:
-            x+= (x- self.memory[2])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[2])
-            self.memory[2] = x.clone()
+            x= x+  (x- self.memory[2]).detach()* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[2])
+            self.memory[2] = x.clone().detach()
 
         x = self.relu(self.layer3(x))
         if self.stochastic:
-            x+= (x- self.memory[3])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[3])
-            self.memory[3] = x.clone()
+            x= x+ (x- self.memory[3]).detach()* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[3])
+            self.memory[3] = x.clone().detach()
 
         x = self.relu(self.layer4(x))
         return x
@@ -133,27 +134,27 @@ class MLPRegressor(nn.Module):
         x = self.relu(self.layer1(x))
         if self.stochastic:
             x+= (x- self.memory[0])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[0])
-            self.memory[0] = x.clone()
+            self.memory[0] = x.clone().detach()
 
         x = self.relu(self.layer2(x))
         if self.stochastic:
             x+= (x- self.memory[1])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[1])
-            self.memory[1] = x.clone()
+            self.memory[1] = x.clone().detach()
 
         x = self.relu(self.layer3(x))
         if self.stochastic:
             x+= (x- self.memory[2])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[2])
-            self.memory[2] = x.clone()
+            self.memory[2] = x.clone().detach()
 
         x = self.relu(self.layer4(x))
         if self.stochastic:
             x+= (x- self.memory[3])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[3])
-            self.memory[3] = x.clone()
+            self.memory[3] = x.clone().detach()
 
         x = self.relu(self.layer5(x))
         if self.stochastic:
             x+= (x- self.memory[4])* torch.rand(x.shape)* self.sigmoid(self.SM.gamma[4])
-            self.memory[4] = x.clone()
+            self.memory[4] = x.clone().detach()
 
         x = self.relu(self.layer6(x))
         
@@ -165,7 +166,7 @@ class stochastic_module(nn.Module):
         """type: mlp/lstm"""
         super(stochastic_module,self).__init__()
       
-        name = "weights/stochastic/"+model+"_"+coin+"_"+_type+".pt"
-        tensor = torch.load(name)
-        self.gamma = Variable(tensor,reqiures_grad=True)
+        self.name = "weights/stochastic/"+model+"_"+coin+"_"+_type+".pt"
+        tensor = torch.load(self.name)
+        self.gamma = Variable(tensor,requires_grad=True)
 
