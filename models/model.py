@@ -3,6 +3,7 @@ from torch import nn
 import random
 from torch.autograd import Variable
 
+# Sequential Model (LSTM) Architecture 
 class SeqRegressor(nn.Module):
 
     def __init__(self,hidden_size=23,stochastic=False,coin=None,model=None):
@@ -53,7 +54,7 @@ class SeqRegressor(nn.Module):
         hidden_state = torch.randn(no_stack, batch_size, hidden_dim)
         cell_state = torch.randn(no_stack, batch_size, hidden_dim)
         """
-        
+        # stochasticity added using a reaction function which contains difference of current and previous activations.
         out,_ = self.lstm(x,self.hidden)
         out = out.detach()
         x = out[:,-1,:][-1]
@@ -80,7 +81,7 @@ class SeqRegressor(nn.Module):
         x = self.relu(self.layer4(x))
         return x
 
-
+# MLP Model Architecture
 class MLPRegressor(nn.Module):
 
     def __init__(self,stochastic=False,coin=None,model=None):
@@ -130,7 +131,8 @@ class MLPRegressor(nn.Module):
     def forward(self,x):
 
         x = x.flatten().view(1,161)
-
+        
+        # stochasticity added using a reaction function which contains difference of current and previous activations.
         x = self.relu(self.layer1(x))
         if self.stochastic:
             x+= (x- self.memory[0])* torch.rand(x.shape) * self.sigmoid(self.SM.gamma[0])
