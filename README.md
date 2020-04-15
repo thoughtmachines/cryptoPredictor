@@ -1,1 +1,1 @@
-# cryptoPredictor
+# CryptoPredictor
