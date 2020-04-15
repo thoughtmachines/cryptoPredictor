@@ -38,7 +38,7 @@ class cryptoData(object):
         
         train_data = torch.Tensor(train_data.to_numpy())
         test_data = torch.Tensor(test_data.to_numpy())
-
+# to deal with missing values the train data consists of 650 entries 50-700 and test data contains 700-930
         train_data[:,5] = torch.Tensor(price[50:700])
         test_data[:,5] = torch.Tensor(price[700:])
 
@@ -56,7 +56,7 @@ class cryptoData(object):
             self.pmax = torch.mean(self.ytrain)
         elif model == "unorm":
             self.pmax = torch.Tensor([1])
-
+# window is used to send past data in batches. In our training the default 7 value was used.
         xtest = []
         ytest = []
         for i in range(len(test_data)-window):
